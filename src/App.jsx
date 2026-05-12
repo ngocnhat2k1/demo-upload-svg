@@ -994,7 +994,6 @@ function ZoneControl({ zone, current, onChange, active, onActivate }) {
 }
 
 function TextZoneControl({ zone, current, currentColor, onChange, onColorChange, active, onActivate }) {
-  const [showColorPicker, setShowColorPicker] = useState(false);
   const [showCustomColor, setShowCustomColor] = useState(false);
 
   const textVal = current ?? zone.defaultValue;
@@ -1013,20 +1012,12 @@ function TextZoneControl({ zone, current, currentColor, onChange, onColorChange,
       onMouseEnter={onActivate}
     >
       {/* Header */}
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2.5 min-w-0">
-          <Type size={16} className="text-amber-400 flex-shrink-0" />
-          <div
-            className="w-4 h-4 rounded-full ring-1 ring-zinc-700 flex-shrink-0 cursor-pointer hover:ring-amber-400 transition-all"
-            style={{ backgroundColor: colorVal }}
-            onClick={() => setShowColorPicker(v => !v)}
-            title="Click to change text colour"
-          />
+          <Type size={14} className="text-amber-400 flex-shrink-0" />
           <div className="min-w-0">
             <div className="text-sm font-medium text-zinc-200 truncate">{zone.label}</div>
-            <div className="text-[9px] font-mono text-zinc-600 tracking-wider truncate">
-              {zone.id} · TEXT · <span style={{ color: colorVal }}>{colorVal.toUpperCase()}</span>
-            </div>
+            <div className="text-[9px] font-mono text-zinc-600 tracking-wider">{zone.id}</div>
           </div>
         </div>
         {(textModified || colorModified) && (
@@ -1041,79 +1032,76 @@ function TextZoneControl({ zone, current, currentColor, onChange, onColorChange,
       </div>
 
       {/* Text input */}
-      <input
-        type="text"
-        value={textVal}
-        onChange={(e) => onChange(e.target.value.toUpperCase())}
-        placeholder={zone.defaultValue.toUpperCase()}
-        className="w-full bg-zinc-900 border border-zinc-800 px-3 py-2 text-sm font-mono text-zinc-200 tracking-widest uppercase focus:border-amber-400 outline-none mb-2"
-      />
+      <div className="mb-3">
+        <div className="text-[9px] font-mono text-zinc-600 tracking-widest mb-1">CONTENT</div>
+        <input
+          type="text"
+          value={textVal}
+          onChange={(e) => onChange(e.target.value.toUpperCase())}
+          placeholder={zone.defaultValue.toUpperCase()}
+          className="w-full bg-zinc-900 border border-zinc-800 px-3 py-2 text-sm font-mono text-zinc-200 tracking-widest uppercase focus:border-amber-400 outline-none"
+        />
+      </div>
 
-      {/* Colour section — toggle */}
-      <button
-        onClick={() => setShowColorPicker(v => !v)}
-        className={`flex items-center gap-2 text-[10px] font-mono tracking-widest mb-2 transition-colors ${
-          showColorPicker ? 'text-amber-400' : 'text-zinc-500 hover:text-zinc-300'
-        }`}
-      >
-        <Palette size={11} />
-        TEXT COLOUR
-        <div className="w-3 h-3 rounded-full ring-1 ring-zinc-700 ml-1" style={{ backgroundColor: colorVal }} />
-        <span className="text-zinc-600">{showColorPicker ? '▲' : '▼'}</span>
-      </button>
-
-      {showColorPicker && (
-        <div className="border border-zinc-800 bg-zinc-950 p-3 mb-1">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[9px] font-mono text-zinc-500 tracking-widest">PICK COLOUR</span>
-            <button
-              onClick={() => setShowCustomColor(v => !v)}
-              className="text-[9px] font-mono tracking-widest text-zinc-500 hover:text-amber-400"
-            >
-              {showCustomColor ? 'PRESETS' : 'CUSTOM HEX'}
-            </button>
+      {/* Colour section — always visible */}
+      <div>
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2 text-[9px] font-mono text-zinc-600 tracking-widest">
+            <span>TEXT COLOUR</span>
+            <div
+              className="w-3 h-3 rounded-full ring-1 ring-zinc-700"
+              style={{ backgroundColor: colorVal }}
+            />
+            <span style={{ color: colorVal }}>{colorVal.toUpperCase()}</span>
           </div>
-          {showCustomColor ? (
-            <div className="flex items-center gap-2">
-              <input
-                type="color"
-                value={colorVal}
-                onChange={(e) => onColorChange(e.target.value)}
-                className="w-10 h-8 bg-zinc-900 border border-zinc-800 cursor-pointer"
-              />
-              <input
-                type="text"
-                value={colorVal}
-                onChange={(e) => {
-                  const v = e.target.value;
-                  if (/^#[0-9a-fA-F]{0,6}$/.test(v)) onColorChange(v);
-                }}
-                className="flex-1 bg-zinc-900 border border-zinc-800 px-2 py-1.5 text-xs font-mono text-zinc-200 focus:border-amber-400 outline-none"
-                placeholder="#000000"
-              />
-            </div>
-          ) : (
-            <div className="grid grid-cols-8 gap-1.5">
-              {COLOR_PALETTE.map((c) => {
-                const isActive = colorVal?.toLowerCase() === c.hex.toLowerCase();
-                return (
-                  <button
-                    key={c.hex}
-                    onClick={() => onColorChange(c.hex)}
-                    title={c.name}
-                    className={`aspect-square rounded-sm transition-all ${
-                      isActive
-                        ? 'ring-2 ring-amber-400 ring-offset-2 ring-offset-zinc-950 scale-110'
-                        : 'ring-1 ring-zinc-800 hover:ring-zinc-600 hover:scale-105'
-                    }`}
-                    style={{ backgroundColor: c.hex }}
-                  />
-                );
-              })}
-            </div>
-          )}
+          <button
+            onClick={() => setShowCustomColor(v => !v)}
+            className="text-[9px] font-mono tracking-widest text-zinc-500 hover:text-amber-400"
+          >
+            {showCustomColor ? 'PRESETS' : 'CUSTOM HEX'}
+          </button>
         </div>
-      )}
+
+        {showCustomColor ? (
+          <div className="flex items-center gap-2">
+            <input
+              type="color"
+              value={colorVal}
+              onChange={(e) => onColorChange(e.target.value)}
+              className="w-10 h-8 bg-zinc-900 border border-zinc-800 cursor-pointer"
+            />
+            <input
+              type="text"
+              value={colorVal}
+              onChange={(e) => {
+                const v = e.target.value;
+                if (/^#[0-9a-fA-F]{0,6}$/.test(v)) onColorChange(v);
+              }}
+              className="flex-1 bg-zinc-900 border border-zinc-800 px-2 py-1.5 text-xs font-mono text-zinc-200 focus:border-amber-400 outline-none"
+              placeholder="#000000"
+            />
+          </div>
+        ) : (
+          <div className="grid grid-cols-8 gap-1.5">
+            {COLOR_PALETTE.map((c) => {
+              const isActive = colorVal?.toLowerCase() === c.hex.toLowerCase();
+              return (
+                <button
+                  key={c.hex}
+                  onClick={() => onColorChange(c.hex)}
+                  title={c.name}
+                  className={`aspect-square rounded-sm transition-all ${
+                    isActive
+                      ? 'ring-2 ring-amber-400 ring-offset-2 ring-offset-zinc-950 scale-110'
+                      : 'ring-1 ring-zinc-800 hover:ring-zinc-600 hover:scale-105'
+                  }`}
+                  style={{ backgroundColor: c.hex }}
+                />
+              );
+            })}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
