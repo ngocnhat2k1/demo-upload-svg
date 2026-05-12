@@ -3,7 +3,7 @@ import {
   ChevronLeft, ShoppingCart, Upload, Layers, Palette, Check, X,
   Plus, Trash2, RefreshCw, Download, FileCode, Tag, DollarSign,
   Zap, AlertCircle, Search, Grid3x3, Wrench, Eye, Code as CodeIcon,
-  Settings, ArrowRight, Sparkles, Box, Hash, Activity
+  Settings, ArrowRight, Sparkles, Box, Hash, Activity, Type
 } from 'lucide-react';
 
 // ============================================================================
@@ -68,6 +68,126 @@ const SAMPLE_TEMPLATES = [
 <path d="M 50 220 L 150 320 L 250 240 L 350 340 L 450 260 L 550 360 L 550 280 L 450 380 L 350 300 L 250 380 L 150 300 L 50 380 Z" fill="#84cc16" id="zone-tribal-bottom" data-label="Bottom Tribal"/>
 <circle cx="300" cy="200" r="42" fill="#fbbf24" id="zone-center" data-label="Center Accent"/>
 </svg>`
+  },
+  {
+    id: 'tpl-owners-decal',
+    name: 'OWNER DECAL',
+    category: 'Decal',
+    basePrice: 55,
+    description: 'Personalised owner decal with name and plate number. Two colour zones plus two editable text fields for full customisation.',
+    svgContent: `<svg viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<rect width="600" height="400" fill="#0a0a0a" id="zone-bg" data-label="Background"/>
+<rect x="40" y="60" width="520" height="280" rx="8" fill="#18181b" stroke="#3f3f46" stroke-width="1.5"/>
+<rect x="160" y="290" width="280" height="28" rx="4" fill="#fbbf24" id="zone-plate-bg" data-label="Plate Background"/>
+<text id="text-plate" data-label="Plate Number" data-default="WF-0000"
+  x="300" y="311" text-anchor="middle" dominant-baseline="middle"
+  font-family="JetBrains Mono, monospace" font-size="15" font-weight="700"
+  fill="#0a0a0a" letter-spacing="3">WF-0000</text>
+<text id="text-owner-name" data-label="Owner Name" data-default="YOUR NAME"
+  x="300" y="195" text-anchor="middle" dominant-baseline="middle"
+  font-family="Bebas Neue, sans-serif" font-size="52" fill="#fafafa" letter-spacing="4">YOUR NAME</text>
+<line x1="160" y1="240" x2="440" y2="240" stroke="#3f3f46" stroke-width="1"/>
+<text x="300" y="265" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#71717a" letter-spacing="4">CUSTOM VEHICLE DECAL</text>
+</svg>`
+  },
+  {
+    id: 'tpl-freight-decal',
+    name: 'FREIGHT DECAL',
+    category: 'Decal',
+    basePrice: 95,
+    description: 'Commercial truck DOT compliance decal. Six editable text fields (company, city, MC, USDOT, VIN, fire tag) with bold outlined typography. Demonstrates path-style outline using native <text> + stroke + paint-order.',
+    svgContent: `<svg viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<rect width="600" height="400" fill="#fafafa" id="zone-bg" data-label="Background"/>
+<g transform="translate(470,55)" opacity="0.85">
+  <path d="M -10 0 L 50 0 L 60 -10 L 80 5 L 60 20 L 50 12 L -10 12 Z" fill="#c9a14a" stroke="#0a0a0a" stroke-width="1.5"/>
+  <path d="M 30 -22 L 36 -4 L 54 -2 L 40 8 L 46 26 L 30 16 L 14 26 L 20 8 L 6 -2 L 24 -4 Z" fill="#c9a14a" stroke="#0a0a0a" stroke-width="1.5"/>
+</g>
+<text id="text-company-name" data-label="Company Name" data-default="FREIGHT SOLUTIONS, LLC"
+  x="300" y="80" text-anchor="middle" dominant-baseline="middle"
+  font-family="Bebas Neue, sans-serif" font-size="38" font-weight="700"
+  fill="#0a0a0a" stroke="#c9a14a" stroke-width="6"
+  paint-order="stroke" stroke-linejoin="round" letter-spacing="2">FREIGHT SOLUTIONS, LLC</text>
+<text id="text-city" data-label="City" data-default="HOUSTON, TX"
+  x="300" y="120" text-anchor="middle" dominant-baseline="middle"
+  font-family="Bebas Neue, sans-serif" font-size="18" font-weight="700"
+  fill="#0a0a0a" stroke="#c9a14a" stroke-width="3.5"
+  paint-order="stroke" stroke-linejoin="round" letter-spacing="4">HOUSTON, TX</text>
+<text id="text-mc" data-label="MC Number" data-default="MC 747394"
+  x="300" y="175" text-anchor="middle" dominant-baseline="middle"
+  font-family="JetBrains Mono, monospace" font-size="24" font-weight="700"
+  fill="#0a0a0a" stroke="#c9a14a" stroke-width="5"
+  paint-order="stroke" stroke-linejoin="round">MC 747394</text>
+<text id="text-usdot" data-label="USDOT Number" data-default="USDOT 2149161"
+  x="300" y="220" text-anchor="middle" dominant-baseline="middle"
+  font-family="JetBrains Mono, monospace" font-size="24" font-weight="700"
+  fill="#0a0a0a" stroke="#c9a14a" stroke-width="5"
+  paint-order="stroke" stroke-linejoin="round">USDOT 2149161</text>
+<text id="text-vin" data-label="VIN" data-default="VIN 1HGCM82633A123456"
+  x="300" y="260" text-anchor="middle" dominant-baseline="middle"
+  font-family="JetBrains Mono, monospace" font-size="14" font-weight="700"
+  fill="#0a0a0a" stroke="#c9a14a" stroke-width="3"
+  paint-order="stroke" stroke-linejoin="round">VIN 1HGCM82633A123456</text>
+<rect x="150" y="330" width="300" height="28" rx="2" fill="#0a0a0a"/>
+<g transform="translate(166,344)"><rect x="-6" y="-9" width="12" height="18" rx="1" fill="#dc2626"/><rect x="-3" y="-12" width="6" height="4" fill="#0a0a0a"/></g>
+<text id="text-fire-tag" data-label="Fire Tag" data-default="FIRE EXTINGUISHER INSIDE"
+  x="305" y="349" text-anchor="middle" dominant-baseline="middle"
+  font-family="DM Sans, sans-serif" font-size="12" font-weight="700"
+  fill="#fafafa" letter-spacing="2">FIRE EXTINGUISHER INSIDE</text>
+</svg>`
+  },
+  {
+    id: 'tpl-jersey-pro',
+    name: 'JERSEY PRO',
+    category: 'Apparel',
+    basePrice: 120,
+    description: 'Pro-style sports jersey back. Editable player name and big-format number with outlined typography. Two color zones for jersey base and accent stripes.',
+    svgContent: `<svg viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<rect width="600" height="400" fill="#09090b"/>
+<path d="M 180 60 L 230 40 L 250 70 L 350 70 L 370 40 L 420 60 L 460 110 L 440 130 L 440 360 L 160 360 L 160 130 L 140 110 Z" fill="#1d4ed8" id="zone-jersey" data-label="Jersey Base"/>
+<rect x="160" y="150" width="280" height="8" fill="#fafafa" id="zone-stripes" data-label="Accent Stripes"/>
+<rect x="160" y="340" width="280" height="6" fill="#fafafa"/>
+<text id="text-player-name" data-label="Player Name" data-default="RODRIGUEZ"
+  x="300" y="135" text-anchor="middle" dominant-baseline="middle"
+  font-family="Bebas Neue, sans-serif" font-size="32" font-weight="700"
+  fill="#fafafa" letter-spacing="6">RODRIGUEZ</text>
+<text id="text-player-number" data-label="Number" data-default="23"
+  x="300" y="260" text-anchor="middle" dominant-baseline="middle"
+  font-family="Bebas Neue, sans-serif" font-size="170" font-weight="700"
+  fill="#fafafa" stroke="#c9a14a" stroke-width="7"
+  paint-order="stroke" stroke-linejoin="round">23</text>
+</svg>`
+  },
+  {
+    id: 'tpl-event-poster',
+    name: 'EVENT POSTER',
+    category: 'Pattern',
+    basePrice: 70,
+    description: 'Concert / event poster layout. Title, date, venue, and tagline all editable. Two color zones for background and accent bar.',
+    svgContent: `<svg viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<rect width="600" height="400" fill="#0a0a0a" id="zone-bg" data-label="Background"/>
+<g opacity="0.08">
+  <path d="M 0 60 L 600 60" stroke="#fafafa" stroke-width="1"/>
+  <path d="M 0 120 L 600 120" stroke="#fafafa" stroke-width="1"/>
+  <path d="M 0 180 L 600 180" stroke="#fafafa" stroke-width="1"/>
+  <path d="M 0 240 L 600 240" stroke="#fafafa" stroke-width="1"/>
+  <path d="M 0 300 L 600 300" stroke="#fafafa" stroke-width="1"/>
+</g>
+<rect x="40" y="80" width="8" height="240" fill="#dc2626" id="zone-accent" data-label="Accent Bar"/>
+<text id="text-event-title" data-label="Event Title" data-default="MIDNIGHT VECTOR"
+  x="80" y="170" font-family="Bebas Neue, sans-serif" font-size="64" font-weight="700"
+  fill="#fafafa" letter-spacing="3">MIDNIGHT VECTOR</text>
+<text id="text-event-date" data-label="Date" data-default="FRI · 06 JUN 2026"
+  x="80" y="210" font-family="JetBrains Mono, monospace" font-size="18" font-weight="700"
+  fill="#fbbf24" letter-spacing="4">FRI · 06 JUN 2026</text>
+<text id="text-event-venue" data-label="Venue" data-default="THE FORGE · DOWNTOWN"
+  x="80" y="248" font-family="DM Sans, sans-serif" font-size="16" font-weight="700"
+  fill="#fafafa" letter-spacing="3">THE FORGE · DOWNTOWN</text>
+<text id="text-event-tagline" data-label="Tagline" data-default="LIVE / ONE NIGHT ONLY"
+  x="80" y="290" font-family="JetBrains Mono, monospace" font-size="12" font-weight="500"
+  fill="#a1a1aa" letter-spacing="6">LIVE / ONE NIGHT ONLY</text>
+<text x="80" y="350" font-family="JetBrains Mono, monospace" font-size="9"
+  fill="#52525b" letter-spacing="4">WRAPFORGE · TEMPLATE · POSTER-001</text>
+</svg>`
   }
 ];
 
@@ -125,6 +245,21 @@ function parseSvgZones(svgString) {
       });
     });
 
+    const textElements = doc.querySelectorAll('[id^="text-"]');
+    textElements.forEach((el) => {
+      const id = el.getAttribute('id');
+      const dataLabel = el.getAttribute('data-label');
+      const label = dataLabel || id.replace('text-', '').replace(/-/g, ' ');
+      const defaultValue = el.getAttribute('data-default') || el.textContent || '';
+      zones.push({
+        id,
+        type: 'text',
+        label: label.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+        defaultValue,
+        tagName: el.tagName.toLowerCase()
+      });
+    });
+
     return { zones, error: null, svgString };
   } catch (e) {
     return { zones: [], error: e.message };
@@ -135,9 +270,14 @@ function applyCustomization(svgString, customization) {
   try {
     const parser = new DOMParser();
     const doc = parser.parseFromString(svgString, 'image/svg+xml');
-    Object.entries(customization).forEach(([zoneId, color]) => {
+    Object.entries(customization).forEach(([zoneId, value]) => {
       const el = doc.getElementById(zoneId);
-      if (el) el.setAttribute('fill', color);
+      if (!el) return;
+      if (zoneId.startsWith('text-')) {
+        el.textContent = value;
+      } else {
+        el.setAttribute('fill', value);
+      }
     });
     return new XMLSerializer().serializeToString(doc.documentElement);
   } catch (e) {
@@ -214,7 +354,7 @@ export default function App() {
     setCurrentTemplate(template);
     const initial = {};
     const { zones } = parseSvgZones(template.svgContent);
-    zones.forEach((z) => (initial[z.id] = z.defaultColor));
+    zones.forEach((z) => (initial[z.id] = z.type === 'text' ? z.defaultValue : z.defaultColor));
     setCustomization(initial);
     setView('customize');
   }
@@ -552,14 +692,24 @@ function TemplateCard({ template, index, onSelect }) {
         </div>
         <div className="flex items-center justify-between mt-4">
           <div className="flex -space-x-1">
-            {zones.slice(0, 5).map((z) => (
-              <div
-                key={z.id}
-                className="w-5 h-5 rounded-full border-2 border-zinc-950"
-                style={{ backgroundColor: z.defaultColor }}
-                title={z.label}
-              />
-            ))}
+            {zones.slice(0, 5).map((z) =>
+              z.type === 'text' ? (
+                <div
+                  key={z.id}
+                  className="w-5 h-5 rounded-full border-2 border-zinc-950 bg-zinc-800 flex items-center justify-center"
+                  title={z.label}
+                >
+                  <Type size={9} className="text-amber-400" />
+                </div>
+              ) : (
+                <div
+                  key={z.id}
+                  className="w-5 h-5 rounded-full border-2 border-zinc-950"
+                  style={{ backgroundColor: z.defaultColor }}
+                  title={z.label}
+                />
+              )
+            )}
             {zones.length > 5 && (
               <div className="w-5 h-5 rounded-full border-2 border-zinc-950 bg-zinc-800 flex items-center justify-center text-[8px] font-mono text-zinc-400">
                 +{zones.length - 5}
@@ -590,11 +740,13 @@ function Customizer({ template, customization, setCustomization, onAddToCart, on
 
   function reset() {
     const initial = {};
-    zones.forEach((z) => (initial[z.id] = z.defaultColor));
+    zones.forEach((z) => (initial[z.id] = z.type === 'text' ? z.defaultValue : z.defaultColor));
     setCustomization(initial);
   }
 
-  const isModified = zones.some((z) => customization[z.id] !== z.defaultColor);
+  const isModified = zones.some((z) =>
+    customization[z.id] !== (z.type === 'text' ? z.defaultValue : z.defaultColor)
+  );
 
   return (
     <div className="animate-slideUp">
@@ -640,7 +792,7 @@ function Customizer({ template, customization, setCustomization, onAddToCart, on
             </div>
           </div>
 
-          {/* Zone color preview strip */}
+          {/* Zone preview strip */}
           <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-2">
             {zones.map((z) => (
               <button
@@ -653,13 +805,22 @@ function Customizer({ template, customization, setCustomization, onAddToCart, on
                 }`}
               >
                 <div className="flex items-center gap-2 mb-1.5">
-                  <div
-                    className="w-3 h-3 rounded-full ring-1 ring-zinc-700"
-                    style={{ backgroundColor: customization[z.id] || z.defaultColor }}
-                  />
+                  {z.type === 'text' ? (
+                    <Type size={12} className="text-amber-400 flex-shrink-0" />
+                  ) : (
+                    <div
+                      className="w-3 h-3 rounded-full ring-1 ring-zinc-700 flex-shrink-0"
+                      style={{ backgroundColor: customization[z.id] || z.defaultColor }}
+                    />
+                  )}
                   <span className="text-[9px] font-mono text-zinc-500 truncate">{z.id}</span>
                 </div>
                 <div className="text-xs font-medium text-zinc-300 truncate">{z.label}</div>
+                {z.type === 'text' && (
+                  <div className="text-[9px] font-mono text-amber-400 truncate mt-0.5">
+                    {customization[z.id] || z.defaultValue}
+                  </div>
+                )}
               </button>
             ))}
           </div>
@@ -684,7 +845,7 @@ function Customizer({ template, customization, setCustomization, onAddToCart, on
             <div className="px-4 py-3 border-b border-zinc-900 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Palette size={13} className="text-amber-400" />
-                <span className="text-[11px] font-mono tracking-widest text-zinc-300">COLOR ZONES</span>
+                <span className="text-[11px] font-mono tracking-widest text-zinc-300">CUSTOMIZE ZONES</span>
               </div>
               {isModified && (
                 <button
@@ -697,16 +858,27 @@ function Customizer({ template, customization, setCustomization, onAddToCart, on
               )}
             </div>
             <div className="divide-y divide-zinc-900">
-              {zones.map((z) => (
-                <ZoneControl
-                  key={z.id}
-                  zone={z}
-                  current={customization[z.id]}
-                  onChange={(c) => setZoneColor(z.id, c)}
-                  active={activeZone === z.id}
-                  onActivate={() => setActiveZone(z.id)}
-                />
-              ))}
+              {zones.map((z) =>
+                z.type === 'text' ? (
+                  <TextZoneControl
+                    key={z.id}
+                    zone={z}
+                    current={customization[z.id]}
+                    onChange={(v) => setZoneColor(z.id, v)}
+                    active={activeZone === z.id}
+                    onActivate={() => setActiveZone(z.id)}
+                  />
+                ) : (
+                  <ZoneControl
+                    key={z.id}
+                    zone={z}
+                    current={customization[z.id]}
+                    onChange={(c) => setZoneColor(z.id, c)}
+                    active={activeZone === z.id}
+                    onActivate={() => setActiveZone(z.id)}
+                  />
+                )
+              )}
             </div>
           </div>
 
@@ -791,6 +963,43 @@ function ZoneControl({ zone, current, onChange, active, onActivate }) {
           })}
         </div>
       )}
+    </div>
+  );
+}
+
+function TextZoneControl({ zone, current, onChange, active, onActivate }) {
+  return (
+    <div
+      className={`p-4 transition-colors ${active ? 'bg-amber-400/[0.03]' : ''}`}
+      onMouseEnter={onActivate}
+    >
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <Type size={16} className="text-amber-400 flex-shrink-0" />
+          <div className="min-w-0">
+            <div className="text-sm font-medium text-zinc-200 truncate">{zone.label}</div>
+            <div className="text-[9px] font-mono text-zinc-600 tracking-wider truncate">
+              {zone.id} · TEXT
+            </div>
+          </div>
+        </div>
+        {current !== zone.defaultValue && (
+          <button
+            onClick={() => onChange(zone.defaultValue)}
+            className="text-[10px] font-mono tracking-widest text-zinc-500 hover:text-amber-400 ml-2 flex-shrink-0 flex items-center gap-1"
+          >
+            <RefreshCw size={10} />
+            RESET
+          </button>
+        )}
+      </div>
+      <input
+        type="text"
+        value={current ?? zone.defaultValue}
+        onChange={(e) => onChange(e.target.value.toUpperCase())}
+        placeholder={zone.defaultValue.toUpperCase()}
+        className="w-full bg-zinc-900 border border-zinc-800 px-3 py-2 text-sm font-mono text-zinc-200 tracking-widest uppercase focus:border-amber-400 outline-none"
+      />
     </div>
   );
 }
@@ -933,11 +1142,19 @@ function CartItem({ item, onRemove, onView }) {
         <div className="mt-2 flex items-center gap-2 flex-wrap">
           {zones.map((z) => (
             <div key={z.id} className="flex items-center gap-1">
-              <div
-                className="w-2.5 h-2.5 rounded-full ring-1 ring-zinc-700"
-                style={{ backgroundColor: item.customization[z.id] }}
-              />
-              <span className="text-[9px] font-mono text-zinc-500">{z.label}</span>
+              {z.type === 'text' ? (
+                <Type size={9} className="text-amber-400" />
+              ) : (
+                <div
+                  className="w-2.5 h-2.5 rounded-full ring-1 ring-zinc-700"
+                  style={{ backgroundColor: item.customization[z.id] }}
+                />
+              )}
+              <span className="text-[9px] font-mono text-zinc-500">
+                {z.type === 'text'
+                  ? `"${item.customization[z.id] ?? z.defaultValue}"`
+                  : z.label}
+              </span>
             </div>
           ))}
         </div>
@@ -1051,14 +1268,22 @@ function CheckoutOutput({ item, onClose }) {
                 {zones.map((z) => (
                   <div key={z.id} className="border border-zinc-900 p-2.5">
                     <div className="flex items-center gap-2 mb-1">
-                      <div
-                        className="w-3 h-3 rounded-full ring-1 ring-zinc-700"
-                        style={{ backgroundColor: item.customization[z.id] }}
-                      />
+                      {z.type === 'text' ? (
+                        <Type size={11} className="text-amber-400 flex-shrink-0" />
+                      ) : (
+                        <div
+                          className="w-3 h-3 rounded-full ring-1 ring-zinc-700 flex-shrink-0"
+                          style={{ backgroundColor: item.customization[z.id] }}
+                        />
+                      )}
                       <span className="text-[9px] font-mono text-zinc-500 truncate">{z.id}</span>
                     </div>
                     <div className="text-[10px] text-zinc-300 truncate">{z.label}</div>
-                    <div className="text-[9px] font-mono text-amber-400">{item.customization[z.id]}</div>
+                    <div className="text-[9px] font-mono text-amber-400 truncate">
+                      {z.type === 'text'
+                        ? `"${item.customization[z.id] ?? z.defaultValue}"`
+                        : item.customization[z.id]}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -1178,7 +1403,7 @@ function Studio({ templates, onAdd, onDelete, showToast }) {
       return;
     }
     if (result.zones.length === 0) {
-      showToast('No zones detected (need id="zone-..." prefix)', 'error');
+      showToast('No zones detected (need id="zone-*" or id="text-*" prefix)', 'error');
     } else {
       setStep(2);
     }
@@ -1234,6 +1459,29 @@ function Studio({ templates, onAdd, onDelete, showToast }) {
     analyzeSvg(example);
   }
 
+  function loadTextExample() {
+    const example = `<svg viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<rect width="600" height="400" fill="#fafafa" id="zone-bg" data-label="Background"/>
+<rect x="40" y="40" width="520" height="320" fill="none" stroke="#c9a14a" stroke-width="3" stroke-dasharray="6 4"/>
+<text id="text-headline" data-label="Headline" data-default="YOUR HEADLINE"
+  x="300" y="160" text-anchor="middle" dominant-baseline="middle"
+  font-family="Bebas Neue, sans-serif" font-size="56" font-weight="700"
+  fill="#0a0a0a" stroke="#c9a14a" stroke-width="6"
+  paint-order="stroke" stroke-linejoin="round" letter-spacing="2">YOUR HEADLINE</text>
+<text id="text-subline" data-label="Subline" data-default="EDITABLE SUBTITLE"
+  x="300" y="220" text-anchor="middle" dominant-baseline="middle"
+  font-family="JetBrains Mono, monospace" font-size="18" font-weight="700"
+  fill="#0a0a0a" letter-spacing="3">EDITABLE SUBTITLE</text>
+<text id="text-code" data-label="Code" data-default="REF-0000"
+  x="300" y="300" text-anchor="middle" dominant-baseline="middle"
+  font-family="JetBrains Mono, monospace" font-size="22" font-weight="700"
+  fill="#0a0a0a" stroke="#c9a14a" stroke-width="3"
+  paint-order="stroke" stroke-linejoin="round">REF-0000</text>
+</svg>`;
+    setSvgInput(example);
+    analyzeSvg(example);
+  }
+
   return (
     <div className="animate-slideUp">
       <div className="flex items-center gap-3 mb-6">
@@ -1244,7 +1492,7 @@ function Studio({ templates, onAdd, onDelete, showToast }) {
         UPLOAD <span className="text-amber-400">TEMPLATE</span>
       </h1>
       <p className="text-zinc-500 text-sm mb-8 max-w-2xl">
-        Drop an SVG file with zones marked using <code className="text-amber-400 font-mono text-xs px-1 py-0.5 bg-zinc-900 border border-zinc-800">id="zone-*"</code> convention. The parser auto-detects color zones and prepares the template for the customizer.
+        Drop an SVG file with zones marked using <code className="text-amber-400 font-mono text-xs px-1 py-0.5 bg-zinc-900 border border-zinc-800">id="zone-*"</code> for colour zones or <code className="text-amber-400 font-mono text-xs px-1 py-0.5 bg-zinc-900 border border-zinc-800">id="text-*"</code> for text zones. The parser auto-detects both types and prepares the template for the customizer.
       </p>
 
       {/* Step Indicator */}
@@ -1303,20 +1551,28 @@ function Studio({ templates, onAdd, onDelete, showToast }) {
                 placeholder='<svg viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg"><rect id="zone-bg" data-label="Background" fill="#000"/></svg>'
                 className="w-full h-40 bg-zinc-900 border border-zinc-800 p-3 text-[11px] font-mono text-zinc-300 focus:border-amber-400 outline-none resize-none"
               />
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 <button
                   onClick={handlePaste}
                   disabled={!svgInput.trim()}
-                  className="flex-1 bg-amber-400 hover:bg-amber-300 disabled:opacity-30 disabled:cursor-not-allowed text-zinc-950 px-4 py-2.5 font-mono text-[11px] tracking-widest font-bold flex items-center justify-center gap-2"
+                  className="flex-1 min-w-[140px] bg-amber-400 hover:bg-amber-300 disabled:opacity-30 disabled:cursor-not-allowed text-zinc-950 px-4 py-2.5 font-mono text-[11px] tracking-widest font-bold flex items-center justify-center gap-2"
                 >
                   <Search size={12} />
                   ANALYZE SVG
                 </button>
                 <button
                   onClick={loadExample}
-                  className="px-4 py-2.5 border border-zinc-800 hover:border-amber-400 hover:text-amber-400 text-zinc-400 font-mono text-[11px] tracking-widest"
+                  className="px-3 py-2.5 border border-zinc-800 hover:border-amber-400 hover:text-amber-400 text-zinc-400 font-mono text-[11px] tracking-widest flex items-center gap-1.5"
                 >
-                  TRY EXAMPLE
+                  <Palette size={11} />
+                  COLOR EXAMPLE
+                </button>
+                <button
+                  onClick={loadTextExample}
+                  className="px-3 py-2.5 border border-zinc-800 hover:border-amber-400 hover:text-amber-400 text-zinc-400 font-mono text-[11px] tracking-widest flex items-center gap-1.5"
+                >
+                  <Type size={11} />
+                  TEXT EXAMPLE
                 </button>
               </div>
             </>
@@ -1341,14 +1597,29 @@ function Studio({ templates, onAdd, onDelete, showToast }) {
               <div className="divide-y divide-zinc-900">
                 {parseResult.zones.map((z) => (
                   <div key={z.id} className="p-4 flex items-center gap-3">
-                    <div
-                      className="w-7 h-7 rounded-sm ring-1 ring-zinc-700 flex-shrink-0"
-                      style={{ backgroundColor: z.defaultColor }}
-                    />
+                    {z.type === 'text' ? (
+                      <div className="w-7 h-7 rounded-sm ring-1 ring-zinc-700 flex-shrink-0 bg-zinc-800 flex items-center justify-center">
+                        <Type size={13} className="text-amber-400" />
+                      </div>
+                    ) : (
+                      <div
+                        className="w-7 h-7 rounded-sm ring-1 ring-zinc-700 flex-shrink-0"
+                        style={{ backgroundColor: z.defaultColor }}
+                      />
+                    )}
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm text-zinc-200">{z.label}</div>
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <span className="text-sm text-zinc-200">{z.label}</span>
+                        <span className={`text-[8px] font-mono tracking-widest px-1 py-0.5 ${
+                          z.type === 'text'
+                            ? 'bg-amber-400/10 text-amber-400 border border-amber-400/30'
+                            : 'bg-zinc-800 text-zinc-400 border border-zinc-700'
+                        }`}>
+                          {z.type === 'text' ? 'TEXT' : 'COLOR'}
+                        </span>
+                      </div>
                       <div className="text-[10px] font-mono text-zinc-500 tracking-wider truncate">
-                        {z.id} · {z.tagName} · {z.defaultColor}
+                        {z.id} · {z.tagName} · {z.type === 'text' ? `"${z.defaultValue}"` : z.defaultColor}
                       </div>
                     </div>
                     <Check size={14} className="text-amber-400 flex-shrink-0" />
@@ -1452,7 +1723,7 @@ function Studio({ templates, onAdd, onDelete, showToast }) {
                 NAMING CONVENTION
               </div>
               <div className="space-y-2 text-xs text-zinc-400 mb-4">
-                <p>The parser scans your SVG for elements with IDs starting with <code className="text-amber-400 font-mono px-1 py-0.5 bg-zinc-900">zone-</code>. Each detected element becomes a customizable color zone.</p>
+                <p>The parser scans your SVG for elements with IDs starting with <code className="text-amber-400 font-mono px-1 py-0.5 bg-zinc-900">zone-</code> (colour zones) or <code className="text-amber-400 font-mono px-1 py-0.5 bg-zinc-900">text-</code> (text zones). Each detected element becomes a customizable zone.</p>
               </div>
               <pre className="bg-zinc-900 border border-zinc-800 p-3 text-[10px] font-mono text-zinc-400 overflow-x-auto">
 {`<rect id="zone-bg"
@@ -1460,10 +1731,25 @@ function Studio({ templates, onAdd, onDelete, showToast }) {
       fill="#0a0a0a"/>
 <path id="zone-primary"
       data-label="Primary Stripe"
-      fill="#dc2626" d="..."/>`}
+      fill="#dc2626" d="..."/>
+<text id="text-owner-name"
+      data-label="Owner Name"
+      data-default="YOUR NAME">YOUR NAME</text>
+<text id="text-mc"
+      data-default="MC 747394"
+      fill="#0a0a0a" stroke="#c9a14a"
+      stroke-width="5"
+      paint-order="stroke">MC 747394</text>`}
               </pre>
-              <div className="mt-3 text-[10px] font-mono text-zinc-500">
-                <span className="text-amber-400">data-label</span> is optional but recommended.
+              <div className="mt-3 space-y-1.5 text-[10px] font-mono text-zinc-500 leading-relaxed">
+                <div>
+                  <span className="text-amber-400">data-label</span> is optional but recommended.{' '}
+                  <span className="text-amber-400">data-default</span> sets the initial text value.
+                </div>
+                <div>
+                  For outlined-text effect (path-look without converting to <code className="text-amber-400 px-1 bg-zinc-900">{'<path>'}</code>),
+                  add <code className="text-amber-400 px-1 bg-zinc-900">stroke</code> + <code className="text-amber-400 px-1 bg-zinc-900">paint-order="stroke"</code> attributes — text content remains fully editable.
+                </div>
               </div>
             </div>
           )}
