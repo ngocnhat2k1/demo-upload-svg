@@ -89,6 +89,105 @@ const SAMPLE_TEMPLATES = [
 <line x1="160" y1="240" x2="440" y2="240" stroke="#3f3f46" stroke-width="1"/>
 <text x="300" y="265" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#71717a" letter-spacing="4">CUSTOM VEHICLE DECAL</text>
 </svg>`
+  },
+  {
+    id: 'tpl-freight-decal',
+    name: 'FREIGHT DECAL',
+    category: 'Decal',
+    basePrice: 95,
+    description: 'Commercial truck DOT compliance decal. Six editable text fields (company, city, MC, USDOT, VIN, fire tag) with bold outlined typography. Demonstrates path-style outline using native <text> + stroke + paint-order.',
+    svgContent: `<svg viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<rect width="600" height="400" fill="#fafafa" id="zone-bg" data-label="Background"/>
+<g transform="translate(470,55)" opacity="0.85">
+  <path d="M -10 0 L 50 0 L 60 -10 L 80 5 L 60 20 L 50 12 L -10 12 Z" fill="#c9a14a" stroke="#0a0a0a" stroke-width="1.5"/>
+  <path d="M 30 -22 L 36 -4 L 54 -2 L 40 8 L 46 26 L 30 16 L 14 26 L 20 8 L 6 -2 L 24 -4 Z" fill="#c9a14a" stroke="#0a0a0a" stroke-width="1.5"/>
+</g>
+<text id="text-company-name" data-label="Company Name" data-default="FREIGHT SOLUTIONS, LLC"
+  x="300" y="80" text-anchor="middle" dominant-baseline="middle"
+  font-family="Bebas Neue, sans-serif" font-size="38" font-weight="700"
+  fill="#0a0a0a" stroke="#c9a14a" stroke-width="6"
+  paint-order="stroke" stroke-linejoin="round" letter-spacing="2">FREIGHT SOLUTIONS, LLC</text>
+<text id="text-city" data-label="City" data-default="HOUSTON, TX"
+  x="300" y="120" text-anchor="middle" dominant-baseline="middle"
+  font-family="Bebas Neue, sans-serif" font-size="18" font-weight="700"
+  fill="#0a0a0a" stroke="#c9a14a" stroke-width="3.5"
+  paint-order="stroke" stroke-linejoin="round" letter-spacing="4">HOUSTON, TX</text>
+<text id="text-mc" data-label="MC Number" data-default="MC 747394"
+  x="300" y="175" text-anchor="middle" dominant-baseline="middle"
+  font-family="JetBrains Mono, monospace" font-size="24" font-weight="700"
+  fill="#0a0a0a" stroke="#c9a14a" stroke-width="5"
+  paint-order="stroke" stroke-linejoin="round">MC 747394</text>
+<text id="text-usdot" data-label="USDOT Number" data-default="USDOT 2149161"
+  x="300" y="220" text-anchor="middle" dominant-baseline="middle"
+  font-family="JetBrains Mono, monospace" font-size="24" font-weight="700"
+  fill="#0a0a0a" stroke="#c9a14a" stroke-width="5"
+  paint-order="stroke" stroke-linejoin="round">USDOT 2149161</text>
+<text id="text-vin" data-label="VIN" data-default="VIN 1HGCM82633A123456"
+  x="300" y="260" text-anchor="middle" dominant-baseline="middle"
+  font-family="JetBrains Mono, monospace" font-size="14" font-weight="700"
+  fill="#0a0a0a" stroke="#c9a14a" stroke-width="3"
+  paint-order="stroke" stroke-linejoin="round">VIN 1HGCM82633A123456</text>
+<rect x="150" y="330" width="300" height="28" rx="2" fill="#0a0a0a"/>
+<g transform="translate(166,344)"><rect x="-6" y="-9" width="12" height="18" rx="1" fill="#dc2626"/><rect x="-3" y="-12" width="6" height="4" fill="#0a0a0a"/></g>
+<text id="text-fire-tag" data-label="Fire Tag" data-default="FIRE EXTINGUISHER INSIDE"
+  x="305" y="349" text-anchor="middle" dominant-baseline="middle"
+  font-family="DM Sans, sans-serif" font-size="12" font-weight="700"
+  fill="#fafafa" letter-spacing="2">FIRE EXTINGUISHER INSIDE</text>
+</svg>`
+  },
+  {
+    id: 'tpl-jersey-pro',
+    name: 'JERSEY PRO',
+    category: 'Apparel',
+    basePrice: 120,
+    description: 'Pro-style sports jersey back. Editable player name and big-format number with outlined typography. Two color zones for jersey base and accent stripes.',
+    svgContent: `<svg viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<rect width="600" height="400" fill="#09090b"/>
+<path d="M 180 60 L 230 40 L 250 70 L 350 70 L 370 40 L 420 60 L 460 110 L 440 130 L 440 360 L 160 360 L 160 130 L 140 110 Z" fill="#1d4ed8" id="zone-jersey" data-label="Jersey Base"/>
+<rect x="160" y="150" width="280" height="8" fill="#fafafa" id="zone-stripes" data-label="Accent Stripes"/>
+<rect x="160" y="340" width="280" height="6" fill="#fafafa"/>
+<text id="text-player-name" data-label="Player Name" data-default="RODRIGUEZ"
+  x="300" y="135" text-anchor="middle" dominant-baseline="middle"
+  font-family="Bebas Neue, sans-serif" font-size="32" font-weight="700"
+  fill="#fafafa" letter-spacing="6">RODRIGUEZ</text>
+<text id="text-player-number" data-label="Number" data-default="23"
+  x="300" y="260" text-anchor="middle" dominant-baseline="middle"
+  font-family="Bebas Neue, sans-serif" font-size="170" font-weight="700"
+  fill="#fafafa" stroke="#c9a14a" stroke-width="7"
+  paint-order="stroke" stroke-linejoin="round">23</text>
+</svg>`
+  },
+  {
+    id: 'tpl-event-poster',
+    name: 'EVENT POSTER',
+    category: 'Pattern',
+    basePrice: 70,
+    description: 'Concert / event poster layout. Title, date, venue, and tagline all editable. Two color zones for background and accent bar.',
+    svgContent: `<svg viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<rect width="600" height="400" fill="#0a0a0a" id="zone-bg" data-label="Background"/>
+<g opacity="0.08">
+  <path d="M 0 60 L 600 60" stroke="#fafafa" stroke-width="1"/>
+  <path d="M 0 120 L 600 120" stroke="#fafafa" stroke-width="1"/>
+  <path d="M 0 180 L 600 180" stroke="#fafafa" stroke-width="1"/>
+  <path d="M 0 240 L 600 240" stroke="#fafafa" stroke-width="1"/>
+  <path d="M 0 300 L 600 300" stroke="#fafafa" stroke-width="1"/>
+</g>
+<rect x="40" y="80" width="8" height="240" fill="#dc2626" id="zone-accent" data-label="Accent Bar"/>
+<text id="text-event-title" data-label="Event Title" data-default="MIDNIGHT VECTOR"
+  x="80" y="170" font-family="Bebas Neue, sans-serif" font-size="64" font-weight="700"
+  fill="#fafafa" letter-spacing="3">MIDNIGHT VECTOR</text>
+<text id="text-event-date" data-label="Date" data-default="FRI · 06 JUN 2026"
+  x="80" y="210" font-family="JetBrains Mono, monospace" font-size="18" font-weight="700"
+  fill="#fbbf24" letter-spacing="4">FRI · 06 JUN 2026</text>
+<text id="text-event-venue" data-label="Venue" data-default="THE FORGE · DOWNTOWN"
+  x="80" y="248" font-family="DM Sans, sans-serif" font-size="16" font-weight="700"
+  fill="#fafafa" letter-spacing="3">THE FORGE · DOWNTOWN</text>
+<text id="text-event-tagline" data-label="Tagline" data-default="LIVE / ONE NIGHT ONLY"
+  x="80" y="290" font-family="JetBrains Mono, monospace" font-size="12" font-weight="500"
+  fill="#a1a1aa" letter-spacing="6">LIVE / ONE NIGHT ONLY</text>
+<text x="80" y="350" font-family="JetBrains Mono, monospace" font-size="9"
+  fill="#52525b" letter-spacing="4">WRAPFORGE · TEMPLATE · POSTER-001</text>
+</svg>`
   }
 ];
 
@@ -1360,6 +1459,29 @@ function Studio({ templates, onAdd, onDelete, showToast }) {
     analyzeSvg(example);
   }
 
+  function loadTextExample() {
+    const example = `<svg viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+<rect width="600" height="400" fill="#fafafa" id="zone-bg" data-label="Background"/>
+<rect x="40" y="40" width="520" height="320" fill="none" stroke="#c9a14a" stroke-width="3" stroke-dasharray="6 4"/>
+<text id="text-headline" data-label="Headline" data-default="YOUR HEADLINE"
+  x="300" y="160" text-anchor="middle" dominant-baseline="middle"
+  font-family="Bebas Neue, sans-serif" font-size="56" font-weight="700"
+  fill="#0a0a0a" stroke="#c9a14a" stroke-width="6"
+  paint-order="stroke" stroke-linejoin="round" letter-spacing="2">YOUR HEADLINE</text>
+<text id="text-subline" data-label="Subline" data-default="EDITABLE SUBTITLE"
+  x="300" y="220" text-anchor="middle" dominant-baseline="middle"
+  font-family="JetBrains Mono, monospace" font-size="18" font-weight="700"
+  fill="#0a0a0a" letter-spacing="3">EDITABLE SUBTITLE</text>
+<text id="text-code" data-label="Code" data-default="REF-0000"
+  x="300" y="300" text-anchor="middle" dominant-baseline="middle"
+  font-family="JetBrains Mono, monospace" font-size="22" font-weight="700"
+  fill="#0a0a0a" stroke="#c9a14a" stroke-width="3"
+  paint-order="stroke" stroke-linejoin="round">REF-0000</text>
+</svg>`;
+    setSvgInput(example);
+    analyzeSvg(example);
+  }
+
   return (
     <div className="animate-slideUp">
       <div className="flex items-center gap-3 mb-6">
@@ -1429,20 +1551,28 @@ function Studio({ templates, onAdd, onDelete, showToast }) {
                 placeholder='<svg viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg"><rect id="zone-bg" data-label="Background" fill="#000"/></svg>'
                 className="w-full h-40 bg-zinc-900 border border-zinc-800 p-3 text-[11px] font-mono text-zinc-300 focus:border-amber-400 outline-none resize-none"
               />
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 <button
                   onClick={handlePaste}
                   disabled={!svgInput.trim()}
-                  className="flex-1 bg-amber-400 hover:bg-amber-300 disabled:opacity-30 disabled:cursor-not-allowed text-zinc-950 px-4 py-2.5 font-mono text-[11px] tracking-widest font-bold flex items-center justify-center gap-2"
+                  className="flex-1 min-w-[140px] bg-amber-400 hover:bg-amber-300 disabled:opacity-30 disabled:cursor-not-allowed text-zinc-950 px-4 py-2.5 font-mono text-[11px] tracking-widest font-bold flex items-center justify-center gap-2"
                 >
                   <Search size={12} />
                   ANALYZE SVG
                 </button>
                 <button
                   onClick={loadExample}
-                  className="px-4 py-2.5 border border-zinc-800 hover:border-amber-400 hover:text-amber-400 text-zinc-400 font-mono text-[11px] tracking-widest"
+                  className="px-3 py-2.5 border border-zinc-800 hover:border-amber-400 hover:text-amber-400 text-zinc-400 font-mono text-[11px] tracking-widest flex items-center gap-1.5"
                 >
-                  TRY EXAMPLE
+                  <Palette size={11} />
+                  COLOR EXAMPLE
+                </button>
+                <button
+                  onClick={loadTextExample}
+                  className="px-3 py-2.5 border border-zinc-800 hover:border-amber-400 hover:text-amber-400 text-zinc-400 font-mono text-[11px] tracking-widest flex items-center gap-1.5"
+                >
+                  <Type size={11} />
+                  TEXT EXAMPLE
                 </button>
               </div>
             </>
@@ -1604,11 +1734,22 @@ function Studio({ templates, onAdd, onDelete, showToast }) {
       fill="#dc2626" d="..."/>
 <text id="text-owner-name"
       data-label="Owner Name"
-      data-default="YOUR NAME">YOUR NAME</text>`}
+      data-default="YOUR NAME">YOUR NAME</text>
+<text id="text-mc"
+      data-default="MC 747394"
+      fill="#0a0a0a" stroke="#c9a14a"
+      stroke-width="5"
+      paint-order="stroke">MC 747394</text>`}
               </pre>
-              <div className="mt-3 text-[10px] font-mono text-zinc-500">
-                <span className="text-amber-400">data-label</span> is optional but recommended.{' '}
-                <span className="text-amber-400">data-default</span> sets the initial text value.
+              <div className="mt-3 space-y-1.5 text-[10px] font-mono text-zinc-500 leading-relaxed">
+                <div>
+                  <span className="text-amber-400">data-label</span> is optional but recommended.{' '}
+                  <span className="text-amber-400">data-default</span> sets the initial text value.
+                </div>
+                <div>
+                  For outlined-text effect (path-look without converting to <code className="text-amber-400 px-1 bg-zinc-900">{'<path>'}</code>),
+                  add <code className="text-amber-400 px-1 bg-zinc-900">stroke</code> + <code className="text-amber-400 px-1 bg-zinc-900">paint-order="stroke"</code> attributes — text content remains fully editable.
+                </div>
               </div>
             </div>
           )}
