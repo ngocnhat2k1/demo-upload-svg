@@ -251,11 +251,13 @@ function parseSvgZones(svgString) {
       const dataLabel = el.getAttribute('data-label');
       const label = dataLabel || id.replace('text-', '').replace(/-/g, ' ');
       const defaultValue = el.getAttribute('data-default') || el.textContent || '';
+      const defaultColor = el.getAttribute('fill') || '#000000';
       zones.push({
         id,
         type: 'text',
         label: label.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
         defaultValue,
+        defaultColor,
         tagName: el.tagName.toLowerCase()
       });
     });
@@ -270,10 +272,16 @@ function applyCustomization(svgString, customization) {
   try {
     const parser = new DOMParser();
     const doc = parser.parseFromString(svgString, 'image/svg+xml');
-    Object.entries(customization).forEach(([zoneId, value]) => {
-      const el = doc.getElementById(zoneId);
+    Object.entries(customization).forEach(([key, value]) => {
+      if (key.endsWith('__color')) {
+        const textId = key.slice(0, -7);
+        const el = doc.getElementById(textId);
+        if (el) el.setAttribute('fill', value);
+        return;
+      }
+      const el = doc.getElementById(key);
       if (!el) return;
-      if (zoneId.startsWith('text-')) {
+      if (key.startsWith('text-')) {
         el.textContent = value;
       } else {
         el.setAttribute('fill', value);
@@ -354,7 +362,10 @@ export default function App() {
     setCurrentTemplate(template);
     const initial = {};
     const { zones } = parseSvgZones(template.svgContent);
-    zones.forEach((z) => (initial[z.id] = z.type === 'text' ? z.defaultValue : z.defaultColor));
+    zones.forEach((z) => {
+      initial[z.id] = z.type === 'text' ? z.defaultValue : z.defaultColor;
+      if (z.type === 'text') initial[z.id + '__color'] = z.defaultColor;
+    });
     setCustomization(initial);
     setView('customize');
   }
@@ -740,13 +751,20 @@ function Customizer({ template, customization, setCustomization, onAddToCart, on
 
   function reset() {
     const initial = {};
-    zones.forEach((z) => (initial[z.id] = z.type === 'text' ? z.defaultValue : z.defaultColor));
+    zones.forEach((z) => {
+      initial[z.id] = z.type === 'text' ? z.defaultValue : z.defaultColor;
+      if (z.type === 'text') initial[z.id + '__color'] = z.defaultColor;
+    });
     setCustomization(initial);
   }
 
-  const isModified = zones.some((z) =>
-    customization[z.id] !== (z.type === 'text' ? z.defaultValue : z.defaultColor)
-  );
+  const isModified = zones.some((z) => {
+    if (z.type === 'text') {
+      return customization[z.id] !== z.defaultValue ||
+             customization[z.id + '__color'] !== z.defaultColor;
+    }
+    return customization[z.id] !== z.defaultColor;
+  });
 
   return (
     <div className="animate-slideUp">
@@ -806,7 +824,13 @@ function Customizer({ template, customization, setCustomization, onAddToCart, on
               >
                 <div className="flex items-center gap-2 mb-1.5">
                   {z.type === 'text' ? (
-                    <Type size={12} className="text-amber-400 flex-shrink-0" />
+                    <>
+                      <Type size={12} className="text-amber-400 flex-shrink-0" />
+                      <div
+                        className="w-3 h-3 rounded-full ring-1 ring-zinc-700 flex-shrink-0"
+                        style={{ backgroundColor: customization[z.id + '__color'] || z.defaultColor }}
+                      />
+                    </>
                   ) : (
                     <div
                       className="w-3 h-3 rounded-full ring-1 ring-zinc-700 flex-shrink-0"
@@ -864,7 +888,9 @@ function Customizer({ template, customization, setCustomization, onAddToCart, on
                     key={z.id}
                     zone={z}
                     current={customization[z.id]}
+                    currentColor={customization[z.id + '__color']}
                     onChange={(v) => setZoneColor(z.id, v)}
+                    onColorChange={(c) => setCustomization(prev => ({ ...prev, [z.id + '__color']: c }))}
                     active={activeZone === z.id}
                     onActivate={() => setActiveZone(z.id)}
                   />
@@ -967,25 +993,36 @@ function ZoneControl({ zone, current, onChange, active, onActivate }) {
   );
 }
 
-function TextZoneControl({ zone, current, onChange, active, onActivate }) {
+function TextZoneControl({ zone, current, currentColor, onChange, onColorChange, active, onActivate }) {
+  const [showCustomColor, setShowCustomColor] = useState(false);
+
+  const textVal = current ?? zone.defaultValue;
+  const colorVal = currentColor ?? zone.defaultColor;
+  const textModified = current !== zone.defaultValue;
+  const colorModified = currentColor !== zone.defaultColor;
+
+  function handleReset() {
+    onChange(zone.defaultValue);
+    onColorChange(zone.defaultColor);
+  }
+
   return (
     <div
       className={`p-4 transition-colors ${active ? 'bg-amber-400/[0.03]' : ''}`}
       onMouseEnter={onActivate}
     >
-      <div className="flex items-center justify-between mb-3">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2.5 min-w-0">
-          <Type size={16} className="text-amber-400 flex-shrink-0" />
+          <Type size={14} className="text-amber-400 flex-shrink-0" />
           <div className="min-w-0">
             <div className="text-sm font-medium text-zinc-200 truncate">{zone.label}</div>
-            <div className="text-[9px] font-mono text-zinc-600 tracking-wider truncate">
-              {zone.id} · TEXT
-            </div>
+            <div className="text-[9px] font-mono text-zinc-600 tracking-wider">{zone.id}</div>
           </div>
         </div>
-        {current !== zone.defaultValue && (
+        {(textModified || colorModified) && (
           <button
-            onClick={() => onChange(zone.defaultValue)}
+            onClick={handleReset}
             className="text-[10px] font-mono tracking-widest text-zinc-500 hover:text-amber-400 ml-2 flex-shrink-0 flex items-center gap-1"
           >
             <RefreshCw size={10} />
@@ -993,13 +1030,78 @@ function TextZoneControl({ zone, current, onChange, active, onActivate }) {
           </button>
         )}
       </div>
-      <input
-        type="text"
-        value={current ?? zone.defaultValue}
-        onChange={(e) => onChange(e.target.value.toUpperCase())}
-        placeholder={zone.defaultValue.toUpperCase()}
-        className="w-full bg-zinc-900 border border-zinc-800 px-3 py-2 text-sm font-mono text-zinc-200 tracking-widest uppercase focus:border-amber-400 outline-none"
-      />
+
+      {/* Text input */}
+      <div className="mb-3">
+        <div className="text-[9px] font-mono text-zinc-600 tracking-widest mb-1">CONTENT</div>
+        <input
+          type="text"
+          value={textVal}
+          onChange={(e) => onChange(e.target.value.toUpperCase())}
+          placeholder={zone.defaultValue.toUpperCase()}
+          className="w-full bg-zinc-900 border border-zinc-800 px-3 py-2 text-sm font-mono text-zinc-200 tracking-widest uppercase focus:border-amber-400 outline-none"
+        />
+      </div>
+
+      {/* Colour section — always visible */}
+      <div>
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2 text-[9px] font-mono text-zinc-600 tracking-widest">
+            <span>TEXT COLOUR</span>
+            <div
+              className="w-3 h-3 rounded-full ring-1 ring-zinc-700"
+              style={{ backgroundColor: colorVal }}
+            />
+            <span style={{ color: colorVal }}>{colorVal.toUpperCase()}</span>
+          </div>
+          <button
+            onClick={() => setShowCustomColor(v => !v)}
+            className="text-[9px] font-mono tracking-widest text-zinc-500 hover:text-amber-400"
+          >
+            {showCustomColor ? 'PRESETS' : 'CUSTOM HEX'}
+          </button>
+        </div>
+
+        {showCustomColor ? (
+          <div className="flex items-center gap-2">
+            <input
+              type="color"
+              value={colorVal}
+              onChange={(e) => onColorChange(e.target.value)}
+              className="w-10 h-8 bg-zinc-900 border border-zinc-800 cursor-pointer"
+            />
+            <input
+              type="text"
+              value={colorVal}
+              onChange={(e) => {
+                const v = e.target.value;
+                if (/^#[0-9a-fA-F]{0,6}$/.test(v)) onColorChange(v);
+              }}
+              className="flex-1 bg-zinc-900 border border-zinc-800 px-2 py-1.5 text-xs font-mono text-zinc-200 focus:border-amber-400 outline-none"
+              placeholder="#000000"
+            />
+          </div>
+        ) : (
+          <div className="grid grid-cols-8 gap-1.5">
+            {COLOR_PALETTE.map((c) => {
+              const isActive = colorVal?.toLowerCase() === c.hex.toLowerCase();
+              return (
+                <button
+                  key={c.hex}
+                  onClick={() => onColorChange(c.hex)}
+                  title={c.name}
+                  className={`aspect-square rounded-sm transition-all ${
+                    isActive
+                      ? 'ring-2 ring-amber-400 ring-offset-2 ring-offset-zinc-950 scale-110'
+                      : 'ring-1 ring-zinc-800 hover:ring-zinc-600 hover:scale-105'
+                  }`}
+                  style={{ backgroundColor: c.hex }}
+                />
+              );
+            })}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -1143,7 +1245,13 @@ function CartItem({ item, onRemove, onView }) {
           {zones.map((z) => (
             <div key={z.id} className="flex items-center gap-1">
               {z.type === 'text' ? (
-                <Type size={9} className="text-amber-400" />
+                <>
+                  <Type size={9} className="text-amber-400" />
+                  <div
+                    className="w-2.5 h-2.5 rounded-full ring-1 ring-zinc-700"
+                    style={{ backgroundColor: item.customization[z.id + '__color'] ?? z.defaultColor }}
+                  />
+                </>
               ) : (
                 <div
                   className="w-2.5 h-2.5 rounded-full ring-1 ring-zinc-700"
@@ -1269,7 +1377,13 @@ function CheckoutOutput({ item, onClose }) {
                   <div key={z.id} className="border border-zinc-900 p-2.5">
                     <div className="flex items-center gap-2 mb-1">
                       {z.type === 'text' ? (
-                        <Type size={11} className="text-amber-400 flex-shrink-0" />
+                        <>
+                          <Type size={11} className="text-amber-400 flex-shrink-0" />
+                          <div
+                            className="w-3 h-3 rounded-full ring-1 ring-zinc-700 flex-shrink-0"
+                            style={{ backgroundColor: item.customization[z.id + '__color'] ?? z.defaultColor }}
+                          />
+                        </>
                       ) : (
                         <div
                           className="w-3 h-3 rounded-full ring-1 ring-zinc-700 flex-shrink-0"
