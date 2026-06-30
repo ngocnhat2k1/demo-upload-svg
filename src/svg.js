@@ -36,13 +36,15 @@ export function parseSvgZones(svgString) {
       const label = dataLabel || id.replace('text-', '').replace(/-/g, ' ');
       const defaultValue = el.getAttribute('data-default') || el.textContent || '';
       const defaultColor = el.getAttribute('fill') || '#000000';
+      const supportsTexture = el.getAttribute('data-texture') === 'true';
       zones.push({
         id,
         type: 'text',
         label: label.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
         defaultValue,
         defaultColor,
-        tagName: el.tagName.toLowerCase()
+        tagName: el.tagName.toLowerCase(),
+        supportsTexture
       });
     });
 

@@ -28,3 +28,16 @@ describe('applyCustomization (baseline)', () => {
     expect(out).toContain('fill="#00ff00"');
   });
 });
+
+describe('parseSvgZones supportsTexture', () => {
+  const SVG = `<svg viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+    <text id="text-a" data-texture="true" fill="#000">A</text>
+    <text id="text-b" fill="#000">B</text>
+  </svg>`;
+
+  it('flags only text with data-texture="true"', () => {
+    const { zones } = parseSvgZones(SVG);
+    expect(zones.find(z => z.id === 'text-a').supportsTexture).toBe(true);
+    expect(zones.find(z => z.id === 'text-b').supportsTexture).toBe(false);
+  });
+});
