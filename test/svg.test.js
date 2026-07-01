@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { parseSvgZones, applyCustomization, TEXTURE_PRESETS } from '../src/svg.js';
+import { SAMPLE_TEMPLATES } from '../src/templates.js';
 
 const SAMPLE = `<svg viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
   <rect width="600" height="400" fill="#000000" id="zone-bg" data-label="Background"/>
@@ -84,5 +85,15 @@ describe('applyCustomization texture', () => {
       <text id="text-z" x="10" y="10" fill="#000">Z</text></svg>`;
     const out = applyCustomization(plain, { __texture: TEXTURE_PRESETS[0].id });
     expect(out).not.toContain('<mask');
+  });
+});
+
+describe('FREIGHT DECAL texture fields', () => {
+  it('all 6 text fields opt into texture', () => {
+    const freight = SAMPLE_TEMPLATES.find(t => t.id === 'tpl-freight-decal');
+    const { zones } = parseSvgZones(freight.svgContent);
+    const textZones = zones.filter(z => z.type === 'text');
+    expect(textZones.length).toBe(6);
+    expect(textZones.every(z => z.supportsTexture)).toBe(true);
   });
 });
