@@ -14,15 +14,25 @@ const svgDataURI = (svg) => 'data:image/svg+xml,' + encodeURIComponent(svg);
 
 // Tileable diamond-plate texture (600x400, internal <pattern>). PLACEHOLDER —
 // swap dataURI for real Drive images later; nothing else changes.
+// TILE = tread-plate cell size in canvas units. Small tile → fine, dense
+// grain (many diamonds per glyph) matching real diamond-plate photos.
+const PLATE_TILE = 18;
 function plateSVG(base, light, dark) {
+  const t = PLATE_TILE;      // full cell
+  const h = t / 2;           // half cell (staggered diamond centres)
+  const q = t / 6;           // lentil half-length
   return `<svg xmlns='http://www.w3.org/2000/svg' width='600' height='400' viewBox='0 0 600 400'>`
-    + `<defs><pattern id='p' width='60' height='60' patternUnits='userSpaceOnUse'>`
-    + `<rect width='60' height='60' fill='${base}'/>`
-    + `<g fill='none' stroke='${dark}' stroke-width='5' stroke-linecap='round'>`
-    + `<path d='M4 22 L18 8'/><path d='M18 8 L32 22'/><path d='M34 38 L48 52'/><path d='M48 52 L62 38'/></g>`
-    + `<g fill='none' stroke='${light}' stroke-width='1.6' stroke-linecap='round'>`
-    + `<path d='M4 20 L18 6'/><path d='M18 6 L32 20'/><path d='M34 36 L48 50'/><path d='M48 50 L62 36'/></g>`
-    + `</pattern></defs><rect width='600' height='400' fill='url(#p)'/></svg>`;
+    + `<defs><pattern id='p' width='${t}' height='${t}' patternUnits='userSpaceOnUse'>`
+    + `<rect width='${t}' height='${t}' fill='${base}'/>`
+    + `<g fill='none' stroke-linecap='round'>`
+    // two short diagonal "lentils" per tile, opposite tilts, staggered -> tread look
+    + `<g stroke='${dark}' stroke-width='${t * 0.16}'>`
+    + `<path d='M${h - q} ${q} L${h + q} ${t - q}'/>`
+    + `<path d='M${q} ${h + q} L${t - q} ${h - q}'/></g>`
+    + `<g stroke='${light}' stroke-width='${t * 0.06}'>`
+    + `<path d='M${h - q} ${q - 1} L${h + q} ${t - q - 1}'/>`
+    + `<path d='M${q} ${h + q - 1} L${t - q} ${h - q - 1}'/></g>`
+    + `</g></pattern></defs><rect width='600' height='400' fill='url(#p)'/></svg>`;
 }
 
 export const TEXTURE_PRESETS = [
