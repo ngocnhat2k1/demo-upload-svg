@@ -636,6 +636,9 @@ function Customizer({ template, customization, setCustomization, onAddToCart, on
                     onColorChange={(c) => setCustomization(prev => ({ ...prev, [z.id + '__color']: c }))}
                     active={activeZone === z.id}
                     onActivate={() => setActiveZone(z.id)}
+                    textureActive={!!activeTexture && z.supportsTexture}
+                    mode={customization[z.id + '__mode'] || 'image'}
+                    onModeChange={(m) => setCustomization(prev => ({ ...prev, [z.id + '__mode']: m }))}
                   />
                 ) : (
                   <ZoneControl
@@ -772,7 +775,7 @@ function ZoneControl({ zone, current, onChange, active, onActivate }) {
   );
 }
 
-function TextZoneControl({ zone, current, currentColor, onChange, onColorChange, active, onActivate }) {
+function TextZoneControl({ zone, current, currentColor, onChange, onColorChange, active, onActivate, textureActive, mode, onModeChange }) {
   const [showCustomColor, setShowCustomColor] = useState(false);
 
   const textVal = current ?? zone.defaultValue;
@@ -810,6 +813,28 @@ function TextZoneControl({ zone, current, currentColor, onChange, onColorChange,
         )}
       </div>
 
+      {textureActive && (
+        <div className="mb-3">
+          <div className="text-[9px] font-mono text-zinc-600 tracking-widest mb-1">FILL</div>
+          <div className="grid grid-cols-2 gap-1.5">
+            {['image', 'color'].map((m) => (
+              <button
+                key={m}
+                onClick={() => onModeChange(m)}
+                className={`px-2 py-1.5 text-[10px] font-mono tracking-widest border transition-all flex items-center justify-center gap-1.5 ${
+                  mode === m
+                    ? 'border-amber-400 text-amber-400 bg-amber-400/5'
+                    : 'border-zinc-800 text-zinc-500 hover:border-zinc-700'
+                }`}
+              >
+                {m === 'image' ? <ImageIcon size={11} /> : <Palette size={11} />}
+                {m.toUpperCase()}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Text input */}
       <div className="mb-3">
         <div className="text-[9px] font-mono text-zinc-600 tracking-widest mb-1">CONTENT</div>
@@ -822,7 +847,7 @@ function TextZoneControl({ zone, current, currentColor, onChange, onColorChange,
         />
       </div>
 
-      {/* Colour section — always visible */}
+      {(!textureActive || mode === 'color') && (
       <div>
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2 text-[9px] font-mono text-zinc-600 tracking-widest">
@@ -881,6 +906,7 @@ function TextZoneControl({ zone, current, currentColor, onChange, onColorChange,
           </div>
         )}
       </div>
+      )}
     </div>
   );
 }
