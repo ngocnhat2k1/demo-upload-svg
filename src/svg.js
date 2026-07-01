@@ -53,8 +53,12 @@ function getOrCreateDefs(doc, svgEl) {
 
 function applyTextureToField(doc, defs, textEl, dataURI, mode, color, canvasW, canvasH) {
   const id = textEl.getAttribute('id');
+  if (!id) return;
   const content = textEl.textContent;
-  const w = textEl.getAttribute('stroke-width') || '4';
+  // Mask border width = the field's own outline; a field with no stroke
+  // (e.g. the fire-tag) gets 0 so the texture fills the glyph body only,
+  // with no spurious halo bleeding past the contour.
+  const w = textEl.getAttribute('stroke-width') || '0';
   const maskId = `tex-mask-${id}`;
 
   const mask = doc.createElementNS(SVG_NS, 'mask');

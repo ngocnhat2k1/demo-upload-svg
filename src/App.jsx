@@ -691,6 +691,7 @@ function TexturePanel({ presets, active, onSelect }) {
             key={p.id}
             onClick={() => onSelect(p.id)}
             title={p.name}
+            aria-label={p.name}
             className={`aspect-square border bg-cover bg-center transition-all ${
               active === p.id
                 ? 'border-amber-400 ring-2 ring-amber-400 ring-offset-2 ring-offset-zinc-950'
