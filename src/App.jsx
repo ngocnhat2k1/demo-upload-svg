@@ -476,6 +476,18 @@ function Customizer({ template, customization, setCustomization, onAddToCart, on
     setCustomization({ ...customization, [zoneId]: color });
   }
 
+  function exportSvg() {
+    const blob = new Blob([renderedSvg], { type: 'image/svg+xml' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${template.id}-${Date.now()}.svg`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
   function reset() {
     const initial = {};
     let templateHasTexture = false;
@@ -656,8 +668,15 @@ function Customizer({ template, customization, setCustomization, onAddToCart, on
 
           {/* CTA */}
           <button
-            onClick={onAddToCart}
+            onClick={exportSvg}
             className="w-full bg-amber-400 hover:bg-amber-300 text-zinc-950 px-6 py-4 font-mono text-xs tracking-[0.2em] font-bold transition-all flex items-center justify-center gap-3 corner-cut glow-amber"
+          >
+            <Download size={14} />
+            EXPORT SVG
+          </button>
+          <button
+            onClick={onAddToCart}
+            className="w-full border border-zinc-700 hover:border-amber-400 hover:text-amber-400 text-zinc-300 px-6 py-3.5 font-mono text-xs tracking-[0.2em] font-bold transition-all flex items-center justify-center gap-3"
           >
             <ShoppingCart size={14} />
             ADD TO CART · ${template.basePrice}
