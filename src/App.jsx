@@ -5,7 +5,7 @@ import {
   Zap, AlertCircle, Search, Grid3x3, Wrench, Eye, Code as CodeIcon,
   Settings, ArrowRight, Sparkles, Box, Hash, Activity, Type
 } from 'lucide-react';
-import { parseSvgZones, applyCustomization } from './svg.js';
+import { parseSvgZones, applyCustomization, TEXTURE_PRESETS } from './svg.js';
 import { SAMPLE_TEMPLATES, COLOR_PALETTE } from './templates.js';
 
 // Inline-render an SVG safely
@@ -77,10 +77,18 @@ export default function App() {
     setCurrentTemplate(template);
     const initial = {};
     const { zones } = parseSvgZones(template.svgContent);
+    let templateHasTexture = false;
     zones.forEach((z) => {
       initial[z.id] = z.type === 'text' ? z.defaultValue : z.defaultColor;
-      if (z.type === 'text') initial[z.id + '__color'] = z.defaultColor;
+      if (z.type === 'text') {
+        initial[z.id + '__color'] = z.defaultColor;
+        if (z.supportsTexture) {
+          initial[z.id + '__mode'] = 'image';
+          templateHasTexture = true;
+        }
+      }
     });
+    if (templateHasTexture) initial.__texture = TEXTURE_PRESETS[0]?.id || '';
     setCustomization(initial);
     setView('customize');
   }
@@ -466,10 +474,18 @@ function Customizer({ template, customization, setCustomization, onAddToCart, on
 
   function reset() {
     const initial = {};
+    let templateHasTexture = false;
     zones.forEach((z) => {
       initial[z.id] = z.type === 'text' ? z.defaultValue : z.defaultColor;
-      if (z.type === 'text') initial[z.id + '__color'] = z.defaultColor;
+      if (z.type === 'text') {
+        initial[z.id + '__color'] = z.defaultColor;
+        if (z.supportsTexture) {
+          initial[z.id + '__mode'] = 'image';
+          templateHasTexture = true;
+        }
+      }
     });
+    if (templateHasTexture) initial.__texture = TEXTURE_PRESETS[0]?.id || '';
     setCustomization(initial);
   }
 
