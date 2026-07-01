@@ -3,7 +3,7 @@ import {
   ChevronLeft, ShoppingCart, Upload, Layers, Palette, Check, X,
   Plus, Trash2, RefreshCw, Download, FileCode, Tag, DollarSign,
   Zap, AlertCircle, Search, Grid3x3, Wrench, Eye, Code as CodeIcon,
-  Settings, ArrowRight, Sparkles, Box, Hash, Activity, Type
+  Settings, ArrowRight, Sparkles, Box, Hash, Activity, Type, Image as ImageIcon
 } from 'lucide-react';
 import { parseSvgZones, applyCustomization, TEXTURE_PRESETS } from './svg.js';
 import { SAMPLE_TEMPLATES, COLOR_PALETTE } from './templates.js';
@@ -465,6 +465,10 @@ function TemplateCard({ template, index, onSelect }) {
 
 function Customizer({ template, customization, setCustomization, onAddToCart, onBack }) {
   const { zones } = parseSvgZones(template.svgContent);
+  const templateHasTexture = zones.some((z) => z.supportsTexture);
+  const activeTexture = customization.__texture || '';
+  const setTexture = (id) =>
+    setCustomization((prev) => ({ ...prev, __texture: id }));
   const renderedSvg = applyCustomization(template.svgContent, customization);
   const [activeZone, setActiveZone] = useState(zones[0]?.id || null);
 
@@ -595,6 +599,14 @@ function Customizer({ template, customization, setCustomization, onAddToCart, on
             <p className="text-sm text-zinc-400 leading-relaxed">{template.description}</p>
           </div>
 
+          {templateHasTexture && (
+            <TexturePanel
+              presets={TEXTURE_PRESETS}
+              active={activeTexture}
+              onSelect={setTexture}
+            />
+          )}
+
           {/* Zone Editor */}
           <div className="border border-zinc-900">
             <div className="px-4 py-3 border-b border-zinc-900 flex items-center justify-between">
@@ -648,6 +660,42 @@ function Customizer({ template, customization, setCustomization, onAddToCart, on
             ADD TO CART · ${template.basePrice}
           </button>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function TexturePanel({ presets, active, onSelect }) {
+  return (
+    <div className="border border-zinc-900">
+      <div className="px-4 py-3 border-b border-zinc-900 flex items-center gap-2">
+        <ImageIcon size={13} className="text-amber-400" />
+        <span className="text-[11px] font-mono tracking-widest text-zinc-300">BACKGROUND TEXTURE</span>
+      </div>
+      <div className="p-4 grid grid-cols-4 gap-2">
+        <button
+          onClick={() => onSelect('')}
+          className={`aspect-square border flex items-center justify-center text-[9px] font-mono tracking-widest transition-all ${
+            active === ''
+              ? 'border-amber-400 text-amber-400 bg-amber-400/5'
+              : 'border-zinc-800 text-zinc-500 hover:border-zinc-700'
+          }`}
+        >
+          NONE
+        </button>
+        {presets.map((p) => (
+          <button
+            key={p.id}
+            onClick={() => onSelect(p.id)}
+            title={p.name}
+            className={`aspect-square border bg-cover bg-center transition-all ${
+              active === p.id
+                ? 'border-amber-400 ring-2 ring-amber-400 ring-offset-2 ring-offset-zinc-950'
+                : 'border-zinc-800 hover:border-zinc-600'
+            }`}
+            style={{ backgroundImage: `url("${p.dataURI}")` }}
+          />
+        ))}
       </div>
     </div>
   );
