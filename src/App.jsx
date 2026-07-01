@@ -530,9 +530,9 @@ function Customizer({ template, customization, setCustomization, onAddToCart, on
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-5 gap-6">
+      <div className="grid lg:grid-cols-5 gap-6 lg:items-start">
         {/* Preview Panel */}
-        <div className="lg:col-span-3">
+        <div className="lg:col-span-3 lg:sticky lg:top-24 lg:self-start">
           <div className="border border-zinc-900 bg-zinc-950 overflow-hidden">
             <div className="px-4 py-2.5 border-b border-zinc-900 flex items-center justify-between">
               <div className="flex items-center gap-2">
