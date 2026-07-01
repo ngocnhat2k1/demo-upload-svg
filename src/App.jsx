@@ -5,7 +5,22 @@ import {
   Zap, AlertCircle, Search, Grid3x3, Wrench, Eye, Code as CodeIcon,
   Settings, ArrowRight, Sparkles, Box, Hash, Activity, Type, Image as ImageIcon
 } from 'lucide-react';
-import { parseSvgZones, applyCustomization, TEXTURE_PRESETS } from './svg.js';
+import {
+  parseSvgZones, applyCustomization, MOTIF_LIBRARY,
+  DEFAULT_MOTIF_COLOR, DEFAULT_BG_COLOR, DEFAULT_OUTLINE_COLOR, DEFAULT_SCALE,
+} from './svg.js';
+
+// Neutral swatch backing that contrasts the motif colour when no bg is chosen,
+// so a motif thumbnail never reads as an empty square.
+function swatchBacking(motifColor, bgColor) {
+  if (bgColor) return bgColor;
+  const h = (motifColor || '').replace('#', '');
+  if (h.length < 6) return '#3f3f46';
+  const r = parseInt(h.slice(0, 2), 16);
+  const g = parseInt(h.slice(2, 4), 16);
+  const b = parseInt(h.slice(4, 6), 16);
+  return (0.299 * r + 0.587 * g + 0.114 * b) > 140 ? '#18181b' : '#d4d4d8';
+}
 import { SAMPLE_TEMPLATES, COLOR_PALETTE } from './templates.js';
 
 // Inline-render an SVG safely
@@ -88,7 +103,14 @@ export default function App() {
         }
       }
     });
-    if (templateHasTexture) initial.__texture = TEXTURE_PRESETS[0]?.id || '';
+    if (templateHasTexture) {
+      initial.__texture = MOTIF_LIBRARY[0]?.id || '';
+      initial.__texPatternData = MOTIF_LIBRARY[0]?.dataURI || '';
+      initial.__texMotifColor = DEFAULT_MOTIF_COLOR;
+      initial.__texBgColor = DEFAULT_BG_COLOR;
+      initial.__texOutlineColor = DEFAULT_OUTLINE_COLOR;
+      initial.__texScale = DEFAULT_SCALE;
+    }
     setCustomization(initial);
     setView('customize');
   }
@@ -195,6 +217,7 @@ export default function App() {
             setCustomization={setCustomization}
             onAddToCart={addToCart}
             onBack={() => setView('showroom')}
+            showToast={showToast}
           />
         )}
         {view === 'cart' && (
@@ -463,14 +486,52 @@ function TemplateCard({ template, index, onSelect }) {
 // CUSTOMIZER
 // ============================================================================
 
-function Customizer({ template, customization, setCustomization, onAddToCart, onBack }) {
+function Customizer({ template, customization, setCustomization, onAddToCart, onBack, showToast }) {
   const { zones } = parseSvgZones(template.svgContent);
   const templateHasTexture = zones.some((z) => z.supportsTexture);
-  const activeTexture = customization.__texture || '';
-  const setTexture = (id) =>
-    setCustomization((prev) => ({ ...prev, __texture: id }));
   const renderedSvg = applyCustomization(template.svgContent, customization);
   const [activeZone, setActiveZone] = useState(zones[0]?.id || null);
+
+  // ---- Background-texture (motif) state ----
+  const [uploadedMotifs, setUploadedMotifs] = useState([]);
+  const motifs = useMemo(() => [...MOTIF_LIBRARY, ...uploadedMotifs], [uploadedMotifs]);
+  const activeTexture = customization.__texture || '';
+  const motifColor = customization.__texMotifColor ?? DEFAULT_MOTIF_COLOR;
+  const bgColor = customization.__texBgColor ?? DEFAULT_BG_COLOR;
+  const outlineColor = customization.__texOutlineColor ?? DEFAULT_OUTLINE_COLOR;
+  const scale = customization.__texScale ?? DEFAULT_SCALE;
+
+  const setMotif = (id) => {
+    const found = motifs.find((m) => m.id === id);
+    setCustomization((prev) => ({
+      ...prev,
+      __texture: id,
+      __texPatternData: found ? found.dataURI : '',
+    }));
+  };
+  const setMotifColor = (c) => setCustomization((prev) => ({ ...prev, __texMotifColor: c }));
+  const setBgColor = (c) => setCustomization((prev) => ({ ...prev, __texBgColor: c }));
+  const setOutlineColor = (c) => setCustomization((prev) => ({ ...prev, __texOutlineColor: c }));
+  const setScale = (s) => setCustomization((prev) => ({ ...prev, __texScale: s }));
+
+  function handleMotifUpload(file) {
+    if (!file) return;
+    if (file.type !== 'image/png') { showToast?.('Only PNG motifs supported', 'error'); return; }
+    if (file.size > 512 * 1024) { showToast?.('Motif must be under 512 KB', 'error'); return; }
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const dataURI = ev.target.result;
+      if (typeof dataURI !== 'string' || !dataURI.startsWith('data:image/png')) {
+        showToast?.('Invalid PNG file', 'error');
+        return;
+      }
+      const id = 'up-' + Date.now();
+      setUploadedMotifs((prev) => [...prev, { id, name: file.name, dataURI }]);
+      setCustomization((prev) => ({ ...prev, __texture: id, __texPatternData: dataURI }));
+      showToast?.('Motif added');
+    };
+    reader.readAsDataURL(file);
+  }
 
   function setZoneColor(zoneId, color) {
     setCustomization({ ...customization, [zoneId]: color });
@@ -501,7 +562,14 @@ function Customizer({ template, customization, setCustomization, onAddToCart, on
         }
       }
     });
-    if (templateHasTexture) initial.__texture = TEXTURE_PRESETS[0]?.id || '';
+    if (templateHasTexture) {
+      initial.__texture = MOTIF_LIBRARY[0]?.id || '';
+      initial.__texPatternData = MOTIF_LIBRARY[0]?.dataURI || '';
+      initial.__texMotifColor = DEFAULT_MOTIF_COLOR;
+      initial.__texBgColor = DEFAULT_BG_COLOR;
+      initial.__texOutlineColor = DEFAULT_OUTLINE_COLOR;
+      initial.__texScale = DEFAULT_SCALE;
+    }
     setCustomization(initial);
   }
 
@@ -613,9 +681,18 @@ function Customizer({ template, customization, setCustomization, onAddToCart, on
 
           {templateHasTexture && (
             <TexturePanel
-              presets={TEXTURE_PRESETS}
-              active={activeTexture}
-              onSelect={setTexture}
+              motifs={motifs}
+              activeId={activeTexture}
+              onSelect={setMotif}
+              motifColor={motifColor}
+              onMotifColor={setMotifColor}
+              bgColor={bgColor}
+              onBgColor={setBgColor}
+              outlineColor={outlineColor}
+              onOutlineColor={setOutlineColor}
+              scale={scale}
+              onScale={setScale}
+              onUpload={handleMotifUpload}
             />
           )}
 
@@ -687,38 +764,187 @@ function Customizer({ template, customization, setCustomization, onAddToCart, on
   );
 }
 
-function TexturePanel({ presets, active, onSelect }) {
+// Transparent-checker swatch style (reused for the "none/transparent" indicator).
+const CHECKER_STYLE = {
+  backgroundImage:
+    'linear-gradient(45deg,#3f3f46 25%,transparent 25%,transparent 75%,#3f3f46 75%),' +
+    'linear-gradient(45deg,#3f3f46 25%,#18181b 25%,#18181b 75%,#3f3f46 75%)',
+  backgroundSize: '8px 8px',
+  backgroundPosition: '0 0,4px 4px',
+};
+
+// Reusable colour picker: preset swatches + custom hex, optional Transparent.
+function ColorField({ label, value, onChange, allowTransparent = false }) {
+  const [showCustom, setShowCustom] = useState(false);
+  const isTransparent = !value;
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2 text-[9px] font-mono text-zinc-600 tracking-widest">
+          <span>{label}</span>
+          <div
+            className="w-3 h-3 rounded-full ring-1 ring-zinc-700"
+            style={isTransparent ? CHECKER_STYLE : { backgroundColor: value }}
+          />
+          <span style={{ color: isTransparent ? '#71717a' : value }}>
+            {isTransparent ? 'TRANSPARENT' : value.toUpperCase()}
+          </span>
+        </div>
+        <button
+          onClick={() => setShowCustom((v) => !v)}
+          className="text-[9px] font-mono tracking-widest text-zinc-500 hover:text-amber-400"
+        >
+          {showCustom ? 'PRESETS' : 'CUSTOM HEX'}
+        </button>
+      </div>
+
+      {showCustom ? (
+        <div className="flex items-center gap-2">
+          <input
+            type="color"
+            value={value || '#000000'}
+            onChange={(e) => onChange(e.target.value)}
+            className="w-10 h-8 bg-zinc-900 border border-zinc-800 cursor-pointer"
+          />
+          <input
+            type="text"
+            value={value}
+            onChange={(e) => {
+              const v = e.target.value;
+              if (/^#[0-9a-fA-F]{0,6}$/.test(v)) onChange(v);
+            }}
+            className="flex-1 bg-zinc-900 border border-zinc-800 px-2 py-1.5 text-xs font-mono text-zinc-200 focus:border-amber-400 outline-none"
+            placeholder="#000000"
+          />
+        </div>
+      ) : (
+        <div className="grid grid-cols-8 gap-1.5">
+          {allowTransparent && (
+            <button
+              onClick={() => onChange('')}
+              title="Transparent"
+              className={`aspect-square rounded-sm transition-all ${
+                isTransparent
+                  ? 'ring-2 ring-amber-400 ring-offset-2 ring-offset-zinc-950 scale-110'
+                  : 'ring-1 ring-zinc-800 hover:ring-zinc-600 hover:scale-105'
+              }`}
+              style={CHECKER_STYLE}
+            />
+          )}
+          {COLOR_PALETTE.map((c) => {
+            const isActive = value?.toLowerCase() === c.hex.toLowerCase();
+            return (
+              <button
+                key={c.hex}
+                onClick={() => onChange(c.hex)}
+                title={c.name}
+                className={`aspect-square rounded-sm transition-all ${
+                  isActive
+                    ? 'ring-2 ring-amber-400 ring-offset-2 ring-offset-zinc-950 scale-110'
+                    : 'ring-1 ring-zinc-800 hover:ring-zinc-600 hover:scale-105'
+                }`}
+                style={{ backgroundColor: c.hex }}
+              />
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function TexturePanel({
+  motifs, activeId, onSelect, motifColor, onMotifColor,
+  bgColor, onBgColor, outlineColor, onOutlineColor, scale, onScale, onUpload,
+}) {
+  const fileRef = useRef(null);
+  const active = !!activeId;
   return (
     <div className="border border-zinc-900">
       <div className="px-4 py-3 border-b border-zinc-900 flex items-center gap-2">
         <ImageIcon size={13} className="text-amber-400" />
         <span className="text-[11px] font-mono tracking-widest text-zinc-300">BACKGROUND TEXTURE</span>
       </div>
-      <div className="p-4 grid grid-cols-4 gap-2">
-        <button
-          onClick={() => onSelect('')}
-          className={`aspect-square border flex items-center justify-center text-[9px] font-mono tracking-widest transition-all ${
-            active === ''
-              ? 'border-amber-400 text-amber-400 bg-amber-400/5'
-              : 'border-zinc-800 text-zinc-500 hover:border-zinc-700'
-          }`}
-        >
-          NONE
-        </button>
-        {presets.map((p) => (
+      <div className="p-4 space-y-4">
+        {/* Motif swatches (live-tinted) + upload */}
+        <div className="grid grid-cols-4 gap-2">
           <button
-            key={p.id}
-            onClick={() => onSelect(p.id)}
-            title={p.name}
-            aria-label={p.name}
-            className={`aspect-square border bg-cover bg-center transition-all ${
-              active === p.id
-                ? 'border-amber-400 ring-2 ring-amber-400 ring-offset-2 ring-offset-zinc-950'
-                : 'border-zinc-800 hover:border-zinc-600'
+            onClick={() => onSelect('')}
+            className={`aspect-square border flex items-center justify-center text-[9px] font-mono tracking-widest transition-all ${
+              activeId === ''
+                ? 'border-amber-400 text-amber-400 bg-amber-400/5'
+                : 'border-zinc-800 text-zinc-500 hover:border-zinc-700'
             }`}
-            style={{ backgroundImage: `url("${p.dataURI}")` }}
+          >
+            NONE
+          </button>
+          {motifs.map((m) => (
+            <button
+              key={m.id}
+              onClick={() => onSelect(m.id)}
+              title={m.name}
+              aria-label={m.name}
+              className={`aspect-square border overflow-hidden transition-all ${
+                activeId === m.id
+                  ? 'border-amber-400 ring-2 ring-amber-400 ring-offset-2 ring-offset-zinc-950'
+                  : 'border-zinc-800 hover:border-zinc-600'
+              }`}
+              style={{ backgroundColor: swatchBacking(motifColor, bgColor) }}
+            >
+              {/* motif tinted via CSS mask (reliable + WYSIWYG) */}
+              <div
+                className="w-full h-full"
+                style={{
+                  backgroundColor: motifColor,
+                  WebkitMaskImage: `url("${m.dataURI}")`,
+                  maskImage: `url("${m.dataURI}")`,
+                  WebkitMaskSize: '20px 20px',
+                  maskSize: '20px 20px',
+                  WebkitMaskRepeat: 'repeat',
+                  maskRepeat: 'repeat',
+                }}
+              />
+            </button>
+          ))}
+          <button
+            onClick={() => fileRef.current?.click()}
+            title="Upload a transparent PNG motif"
+            className="aspect-square border border-dashed border-zinc-800 text-zinc-500 hover:border-amber-400 hover:text-amber-400 flex flex-col items-center justify-center gap-1 transition-all"
+          >
+            <Upload size={14} />
+            <span className="text-[8px] font-mono tracking-widest">PNG</span>
+          </button>
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/png"
+            className="hidden"
+            onChange={(e) => { onUpload(e.target.files?.[0]); e.target.value = ''; }}
           />
-        ))}
+        </div>
+
+        {active && (
+          <>
+            <ColorField label="MÀU HỌA TIẾT" value={motifColor} onChange={onMotifColor} />
+            <ColorField label="MÀU NỀN" value={bgColor} onChange={onBgColor} allowTransparent />
+            <ColorField label="MÀU VIỀN" value={outlineColor} onChange={onOutlineColor} allowTransparent />
+            <div>
+              <div className="flex items-center justify-between mb-1.5 text-[9px] font-mono text-zinc-600 tracking-widest">
+                <span>KÍCH THƯỚC HỌA TIẾT</span>
+                <span className="text-zinc-400">{Math.round(scale * 100)}%</span>
+              </div>
+              <input
+                type="range"
+                min="0.5"
+                max="3"
+                step="0.1"
+                value={scale}
+                onChange={(e) => onScale(parseFloat(e.target.value))}
+                className="w-full accent-amber-400 cursor-pointer"
+              />
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
@@ -796,8 +1022,6 @@ function ZoneControl({ zone, current, onChange, active, onActivate }) {
 }
 
 function TextZoneControl({ zone, current, currentColor, onChange, onColorChange, active, onActivate, textureActive, mode, onModeChange }) {
-  const [showCustomColor, setShowCustomColor] = useState(false);
-
   const textVal = current ?? zone.defaultValue;
   const colorVal = currentColor ?? zone.defaultColor;
   const textModified = current !== zone.defaultValue;
@@ -868,64 +1092,7 @@ function TextZoneControl({ zone, current, currentColor, onChange, onColorChange,
       </div>
 
       {(!textureActive || mode === 'color') && (
-      <div>
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-2 text-[9px] font-mono text-zinc-600 tracking-widest">
-            <span>TEXT COLOUR</span>
-            <div
-              className="w-3 h-3 rounded-full ring-1 ring-zinc-700"
-              style={{ backgroundColor: colorVal }}
-            />
-            <span style={{ color: colorVal }}>{colorVal.toUpperCase()}</span>
-          </div>
-          <button
-            onClick={() => setShowCustomColor(v => !v)}
-            className="text-[9px] font-mono tracking-widest text-zinc-500 hover:text-amber-400"
-          >
-            {showCustomColor ? 'PRESETS' : 'CUSTOM HEX'}
-          </button>
-        </div>
-
-        {showCustomColor ? (
-          <div className="flex items-center gap-2">
-            <input
-              type="color"
-              value={colorVal}
-              onChange={(e) => onColorChange(e.target.value)}
-              className="w-10 h-8 bg-zinc-900 border border-zinc-800 cursor-pointer"
-            />
-            <input
-              type="text"
-              value={colorVal}
-              onChange={(e) => {
-                const v = e.target.value;
-                if (/^#[0-9a-fA-F]{0,6}$/.test(v)) onColorChange(v);
-              }}
-              className="flex-1 bg-zinc-900 border border-zinc-800 px-2 py-1.5 text-xs font-mono text-zinc-200 focus:border-amber-400 outline-none"
-              placeholder="#000000"
-            />
-          </div>
-        ) : (
-          <div className="grid grid-cols-8 gap-1.5">
-            {COLOR_PALETTE.map((c) => {
-              const isActive = colorVal?.toLowerCase() === c.hex.toLowerCase();
-              return (
-                <button
-                  key={c.hex}
-                  onClick={() => onColorChange(c.hex)}
-                  title={c.name}
-                  className={`aspect-square rounded-sm transition-all ${
-                    isActive
-                      ? 'ring-2 ring-amber-400 ring-offset-2 ring-offset-zinc-950 scale-110'
-                      : 'ring-1 ring-zinc-800 hover:ring-zinc-600 hover:scale-105'
-                  }`}
-                  style={{ backgroundColor: c.hex }}
-                />
-              );
-            })}
-          </div>
-        )}
-      </div>
+        <ColorField label="TEXT COLOUR" value={colorVal} onChange={onColorChange} />
       )}
     </div>
   );

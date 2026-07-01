@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseSvgZones, applyCustomization, TEXTURE_PRESETS } from '../src/svg.js';
+import { parseSvgZones, applyCustomization, MOTIF_LIBRARY } from '../src/svg.js';
 import { SAMPLE_TEMPLATES } from '../src/templates.js';
 
 const SAMPLE = `<svg viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
@@ -43,47 +43,111 @@ describe('parseSvgZones supportsTexture', () => {
   });
 });
 
-describe('applyCustomization texture', () => {
+describe('applyCustomization motif texture', () => {
   const SVG = `<svg viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
     <text id="text-a" data-texture="true" x="300" y="80" text-anchor="middle"
           fill="#000" stroke="#c9a14a" stroke-width="6">HELLO</text>
   </svg>`;
 
-  it('exposes at least one preset with a data URI', () => {
-    expect(TEXTURE_PRESETS.length).toBeGreaterThan(0);
-    expect(TEXTURE_PRESETS[0].dataURI).toMatch(/^data:image\/svg\+xml,/);
+  // Selecting a motif stores both its id and its data URI (self-contained export).
+  const tex = (extra) => ({
+    __texture: MOTIF_LIBRARY[0].id,
+    __texPatternData: MOTIF_LIBRARY[0].dataURI,
+    ...extra,
   });
 
-  it('image mode: masked image + contour, no solid colour overlay', () => {
-    const out = applyCustomization(SVG, {
-      'text-a': 'HELLO', 'text-a__color': '#0a0a0a',
-      'text-a__mode': 'image', __texture: TEXTURE_PRESETS[0].id,
+  it('exposes a motif library where each entry has a data URI', () => {
+    expect(MOTIF_LIBRARY.length).toBeGreaterThan(0);
+    MOTIF_LIBRARY.forEach((m) => {
+      expect(m.id).toBeTruthy();
+      expect(m.name).toBeTruthy();
+      expect(m.dataURI).toMatch(/^data:image\/svg\+xml,/);
     });
-    expect(out).toContain('tex-mask-text-a');
-    expect(out).toContain('<image');
-    expect(out).toContain('mask="url(#tex-mask-text-a)"');
-    expect(out).toContain('stroke-width="1.2"'); // contour
   });
 
-  it('colour mode: adds a solid colour overlay over the texture', () => {
-    const out = applyCustomization(SVG, {
-      'text-a': 'HELLO', 'text-a__color': '#ff0000',
-      'text-a__mode': 'color', __texture: TEXTURE_PRESETS[0].id,
-    });
-    expect(out).toContain('<image');
-    expect(out).toContain('fill="#ff0000"');
+  it('image mode: builds tint filter + tiled pattern + masked pattern fill + contour', () => {
+    const out = applyCustomization(SVG, tex({
+      'text-a': 'HELLO', 'text-a__color': '#0a0a0a', 'text-a__mode': 'image',
+    }));
+    // tint filter
+    expect(out).toContain('<filter');
+    expect(out).toContain('feFlood');
+    expect(out).toContain('SourceAlpha');
+    // tiled pattern in user space
+    expect(out).toContain('<pattern');
+    expect(out).toContain('patternUnits="userSpaceOnUse"');
+    // glyph is masked (namespaced id) and filled by the pattern
+    expect(out).toMatch(/mask="url\(#tex-mask-text-a-[^)]+\)"/);
+    expect(out).toMatch(/fill="url\(#tex-fill-[^)]+\)"/);
+    // the field's original outline (viền) is preserved
+    expect(out).toContain('stroke="#c9a14a"');
   });
 
-  it('no texture selected: no mask/image (legacy behaviour)', () => {
+  it('outline colour: overrides via __texOutlineColor; transparent lets the plate fill the outline', () => {
+    const over = applyCustomization(SVG, tex({ 'text-a__mode': 'image', __texOutlineColor: '#00ff00' }));
+    expect(over).toContain('stroke="#00ff00"');
+    expect(over).not.toContain('stroke="#c9a14a"'); // original gold replaced
+    expect(over).not.toContain('stroke="#fff"');    // interior-only mask (no outline coverage)
+    // Transparent outline → mask widens to cover the stroke area with the plate.
+    const clear = applyCustomization(SVG, tex({ 'text-a__mode': 'image', __texOutlineColor: '' }));
+    expect(clear).toContain('stroke="#fff"');       // mask now covers the outline
+    expect(clear).not.toContain('stroke="#00ff00"');
+  });
+
+  it('colour mode: adds a solid colour overlay over the pattern', () => {
+    const out = applyCustomization(SVG, tex({
+      'text-a': 'HELLO', 'text-a__color': '#ff00aa', 'text-a__mode': 'color',
+    }));
+    expect(out).toContain('<pattern');
+    expect(out).toContain('fill="#ff00aa"');
+  });
+
+  it('backing rect present when __texBgColor set, absent when transparent', () => {
+    const withBg = applyCustomization(SVG, tex({ 'text-a__mode': 'image', __texBgColor: '#123456' }));
+    expect(withBg).toContain('fill="#123456"');
+    const noBg = applyCustomization(SVG, tex({ 'text-a__mode': 'image', __texBgColor: '' }));
+    expect(noBg).not.toContain('#123456');
+    expect(noBg).toContain('<pattern'); // pattern still built, just no backing
+  });
+
+  it('scale is reflected in the pattern tile size', () => {
+    const s1 = applyCustomization(SVG, tex({ 'text-a__mode': 'image', __texScale: 1 }));
+    expect(s1).toContain('width="8"'); // BASE_TILE * 1
+    const s2 = applyCustomization(SVG, tex({ 'text-a__mode': 'image', __texScale: 2 }));
+    expect(s2).toContain('width="16"'); // BASE_TILE * 2
+  });
+
+  it('embeds the motif data URI exactly (self-contained export)', () => {
+    const out = applyCustomization(SVG, tex({ 'text-a__mode': 'image' }));
+    expect(out).toContain(MOTIF_LIBRARY[0].dataURI);
+  });
+
+  it('generates unique def ids per call (no cross-item bleed in shared DOM)', () => {
+    const cfg = tex({ 'text-a__mode': 'image' });
+    const a = applyCustomization(SVG, cfg);
+    const b = applyCustomization(SVG, cfg);
+    const idA = a.match(/tex-fill-([a-z0-9]+)/)[1];
+    const idB = b.match(/tex-fill-([a-z0-9]+)/)[1];
+    expect(idA).not.toBe(idB);
+  });
+
+  it('no motif selected: legacy behaviour (no mask/pattern/filter)', () => {
     const out = applyCustomization(SVG, { 'text-a': 'HELLO', __texture: '' });
     expect(out).not.toContain('<mask');
-    expect(out).not.toContain('<image');
+    expect(out).not.toContain('<pattern');
+    expect(out).not.toContain('<filter');
   });
 
-  it('texture set but field lacks data-texture: untouched', () => {
+  it('motif id set but data missing: falls back to legacy (no broken href)', () => {
+    const out = applyCustomization(SVG, { 'text-a': 'HELLO', __texture: MOTIF_LIBRARY[0].id });
+    expect(out).not.toContain('<mask');
+    expect(out).not.toContain('<pattern');
+  });
+
+  it('texture active but field lacks data-texture: field untouched', () => {
     const plain = `<svg viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
       <text id="text-z" x="10" y="10" fill="#000">Z</text></svg>`;
-    const out = applyCustomization(plain, { __texture: TEXTURE_PRESETS[0].id });
+    const out = applyCustomization(plain, tex({}));
     expect(out).not.toContain('<mask');
   });
 });
